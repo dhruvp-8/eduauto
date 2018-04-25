@@ -15,7 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework import routers
+from rest_framework_jwt.views import obtain_jwt_token
+from django.conf.urls import url, include
+
+router = routers.DefaultRouter()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # Api Endpoints
+	url(r'^api/auth/token', obtain_jwt_token),
+	url(r'api/', include(router.urls)),
+	url(r'api/', include('eduauto_site_master.api.urls')),
 ]
