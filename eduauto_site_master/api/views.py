@@ -8,7 +8,8 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .serializers import *
-import datetime
+from datetime import datetime
+from datetime import timedelta  
 
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
@@ -114,6 +115,47 @@ class storeAttendance(APIView):
 		else:
 			return Response(status=HTTP_400_BAD_REQUEST)
 
+# Calculate Attendance
+class calculateAttendance(APIView):
+	renderer_classes = (JSONRenderer, )
 
+	def get(self, request, *args, **kwargs):
+		user_id = int(self.kwargs.get('user_id'))
+		total_teaching_days = EaAttendance.objects.filter(user_id=user_id).count()
+		present_days = EaAttendance.objects.filter(user_id=user_id, attend_status=1).count()
+		absent_days = EaAttendance.objects.filter(user_id=user_id, attend_status=0).count()
+		percent = (present_days/total_teaching_days)*100
 
+		return Response({'user_id': user_id, 'present_days': present_days, 'absent_days':absent_days, 'total_teaching_days': total_teaching_days,'percentage': percent})
+
+# Calculate Attendance by range of dates
+class calculateAttendanceByRangeDate(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def get(self, request, *args, **kwargs):
+		user_id = int(self.kwargs.get('user_id'))
+		start_date = self.kwargs.get('start_date')
+		end_date = self.kwargs.get('end_date')
+		total_teaching_days = EaAttendance.objects.filter(user_id=user_id, date__range=[start_date, end_date]).count()
+		present_days = EaAttendance.objects.filter(user_id=user_id, attend_status=1, date__range=[start_date, end_date]).count()
+		absent_days = EaAttendance.objects.filter(user_id=user_id, attend_status=0, date__range=[start_date, end_date]).count()
+		percent = (present_days/total_teaching_days)*100
+		
+		return Response({'user_id': user_id, 'start_date': start_date, 'end_date': end_date, 'total_teaching_days': total_teaching_days, 'present_days': present_days, 'absent_days': absent_days, 'percentage': percent})
+
+# Calculate Attendance by a specific date
+class calculateAttendanceBySpecificDate(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def get(self, request, *args, **kwargs):
+		user_id = int(self.kwargs.get('user_id'))
+		specific_date = self.kwargs.get('specific_date')
+		c_date = datetime.strptime(specific_date, '%Y-%m-%d') + timedelta(days=1)
+		c_date = str(c_date).split(' ')
+		next_date = c_date[0]
+		total_teaching_days = EaAttendance.objects.filter(user_id=user_id, date__range=[specific_date, next_date]).count()
+		present_days = EaAttendance.objects.filter(user_id=user_id, attend_status=1, date__range=[specific_date, next_date]).count()
+		absent_days = EaAttendance.objects.filter(user_id=user_id, attend_status=0, date__range=[specific_date, next_date]).count()
+
+		return Response({'user_id': user_id, 'specific_date': specific_date, 'present_days': present_days, 'absent_days':absent_days, 'total_teaching_days': total_teaching_days})
 
