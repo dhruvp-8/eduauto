@@ -37,9 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'eduauto_site_master.api',
 
     # Third Party Apps
     'rest_framework',
+
 ]
 
 MIDDLEWARE = [

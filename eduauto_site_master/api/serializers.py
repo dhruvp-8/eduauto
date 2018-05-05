@@ -1,6 +1,7 @@
 from rest_framework.serializers import CharField, EmailField, ValidationError, ModelSerializer, SerializerMethodField, PrimaryKeyRelatedField, HyperlinkedIdentityField
 from django.contrib.auth.models import User
 from django.db.models import Q
+from .models import *
 
 import random
 import string
@@ -96,4 +97,14 @@ class UserLoginSerializer(ModelSerializer):
 
 		data["token"] = unique_id			
 
-		return data	
+		return data
+
+class AttendanceSerializer(ModelSerializer):
+	class Meta:
+		model = EaAttendance
+		fields = [
+			'user_id',
+			'roll_no',
+			'user_type',
+			'attend_status',
+		]
