@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 05, 2018 at 11:24 AM
+-- Generation Time: May 12, 2018 at 01:32 PM
 -- Server version: 10.1.29-MariaDB
 -- PHP Version: 7.1.12
 
@@ -124,7 +124,7 @@ CREATE TABLE `auth_user` (
 INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
 (1, 'pbkdf2_sha256$100000$6eYueyDCh8yS$mtlj70TIKnAB0VZC7SAtxXPLY5FiNxuT2vSJmhhMP0c=', '2018-04-25 08:01:54.100544', 1, 'dhruv', 'Dhruv', 'Patel', 'dhruvpatel5738@gmail.com', 0, 1, '2018-04-16 09:20:13.403775'),
 (2, 'pbkdf2_sha256$100000$2EfZQTt3LfH2$ox457lAv6EHT3C9iPIQmW24xf/qtkA7EuG9yFpsmuak=', NULL, 1, 'bhaumik', 'Bhaumik', 'Ichhaporia', 'bhaumik.ichhaporia59@gmail.com', 0, 1, '2018-04-25 08:02:19.000000'),
-(3, 'pbkdf2_sha256$100000$0OE7W3YnCC4w$3ogWwdhUVcocTBM4D7l2pkO1Ded2Jo5r64fwpRtos/c=', NULL, 0, 'prit123', 'Prit', 'Thakkar', 'pritthakkar@gmail.com', 0, 1, '2018-05-04 10:09:12.074985'),
+(3, 'pbkdf2_sha256$100000$0OE7W3YnCC4w$3ogWwdhUVcocTBM4D7l2pkO1Ded2Jo5r64fwpRtos/c=', NULL, 1, 'prit123', 'Prit', 'Thakkar', 'pritthakkar@gmail.com', 0, 1, '2018-05-04 10:09:12.074985'),
 (4, 'pbkdf2_sha256$100000$yy6xIu84CdXa$/EwWng/QUkCr+eBkydg3lj/hZCdTBpvTudEU1owFJfQ=', NULL, 0, 'shail123', 'Shail', 'Shah', 'shailshah@gmail.com', 0, 1, '2018-05-04 10:09:59.379928');
 
 -- --------------------------------------------------------
@@ -337,9 +337,9 @@ CREATE TABLE `ea_student_details` (
 --
 
 INSERT INTO `ea_student_details` (`s_id`, `standard`, `school`, `address`, `branch`, `emergency_number`, `roll_no`, `year_of_joining`, `birthdate`, `contact_no`, `refs`, `fees_paid`, `subjects_enrolled`, `activated_status`, `year_of_leaving`, `stream`, `board`) VALUES
-(1, 8, 'Bright ', '24, Ram nagar Society', 'Devraj', 9825577083, 1, '2018-05-02 08:00:00', '1996-05-08', 8469905736, '', 10000, '', 0, '2018-05-29 00:00:00', 'Science', 'CBSE'),
-(3, 8, 'Bright', '34, Balajinagar Society ', 'Devraj', 8469905736, 5, '2018-05-22 00:00:00', '1997-03-03', 8469905736, '', 5000, '', 0, '2018-05-31 00:00:00', 'Science', 'CBSE'),
-(4, 9, 'BHS', '29, Ram nagar Society', 'Pujer', 8469905736, 2, '2018-05-15 00:00:00', '1996-05-08', 9825577083, '', 8000, '', 0, '2018-06-15 00:00:00', 'Science', 'GBSE');
+(1, 8, 'Bright ', '24, Ram nagar Society', 'Devraj', 9825577083, 1, '2018-05-02 08:00:00', '1996-05-08', 8469905736, '', 10000, 'Maths;Science;English;', 0, '2018-05-29 00:00:00', 'Science', 'CBSE'),
+(3, 8, 'Bright', '34, Balajinagar Society ', 'Devraj', 8469905736, 5, '2018-05-22 00:00:00', '1997-03-03', 8469905736, '', 5000, 'Social Science;Maths;Science;', 0, '2018-05-31 00:00:00', 'Science', 'CBSE'),
+(4, 9, 'BHS', '29, Ram nagar Society', 'Pujer', 8469905736, 2, '2018-05-15 00:00:00', '1996-05-08', 9825577083, '', 8000, 'Physics;Chemistry;Maths', 0, '2018-06-15 00:00:00', 'Science', 'GBSE');
 
 -- --------------------------------------------------------
 
