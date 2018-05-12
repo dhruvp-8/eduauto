@@ -70,6 +70,24 @@ class getStandard(APIView):
 		standard = EaStudentDetails.objects.values_list('standard', flat=True).order_by('standard').distinct()
 		return Response({'standard': standard})
 
+# Get List of all Subjects for selection
+class getSubjects(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def get(self, request, *args, **kwargs):
+		subjects = EaStudentDetails.objects.values_list('subjects_enrolled', flat=True).order_by('standard').distinct()
+		fin_subs = set()
+		for i in range(0, len(subjects)):
+			r = subjects[i].split(";")
+			for j in range(0, len(r)):
+				fin_subs.add(r[j])
+		subs = []
+		for i in fin_subs:
+			if i != '':
+				subs.append(i)		
+		return Response({'subjects': subs})
+
+
 # Get Student Data List for taking the Attendance
 class getStudentList(APIView):
 	renderer_classes = (JSONRenderer, )
@@ -78,7 +96,8 @@ class getStudentList(APIView):
 		studentlist = []
 		branch = self.kwargs.get('branch')
 		standard = self.kwargs.get('standard')
-		roll_no = EaStudentDetails.objects.filter(branch=branch, standard=standard).values('roll_no','s_id')
+		subject = self.kwargs.get('subject')
+		roll_no = EaStudentDetails.objects.filter(branch=branch, standard=standard, subjects_enrolled__contains=subject).values('roll_no','s_id')
 		user_type = 'student'
 		for i in range(0,len(roll_no)):
 			fin = {}
