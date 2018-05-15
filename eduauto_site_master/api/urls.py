@@ -20,5 +20,10 @@ urlpatterns = [
 	url(r'^storeAttendance/$', storeAttendance.as_view(), name='create_attendance'),
 	url(r'^attendance/(?P<user_id>\d+)/$', calculateAttendance.as_view(), name='calculate_attendance'),
 	url(r'^attendance/(?P<user_id>\d+)/(?P<start_date>([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])))/(?P<end_date>([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])))/$', calculateAttendanceByRangeDate.as_view(), name='calculate_attendance_by_range_date'),
-	url(r'^attendance/(?P<user_id>\d+)/(?P<specific_date>([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])))/$', calculateAttendanceBySpecificDate.as_view(), name='calculate_attendance_by_specific_date'),		
+	url(r'^attendance/(?P<user_id>\d+)/(?P<specific_date>([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])))/$', calculateAttendanceBySpecificDate.as_view(), name='calculate_attendance_by_specific_date'),
+
+	# News Feed
+	url(r'^news/$', getNews.as_view(), name='get_news'),
+	url(r'^news/recent/(?P<no>\d+)/$', getRecentNews.as_view(), name='get_recent_news'),
+	url(r'^news/popularity/$', getNewsBasedonPopularity.as_view(), name='get_news_based_on_popularity'),		
 ]

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 15, 2018 at 12:00 PM
+-- Generation Time: May 15, 2018 at 02:31 PM
 -- Server version: 10.1.29-MariaDB
 -- PHP Version: 7.1.12
 
@@ -95,7 +95,13 @@ INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALU
 (30, 'Can delete ea user mapping', 10, 'delete_eausermapping'),
 (31, 'Can add ea academic history', 11, 'add_eaacademichistory'),
 (32, 'Can change ea academic history', 11, 'change_eaacademichistory'),
-(33, 'Can delete ea academic history', 11, 'delete_eaacademichistory');
+(33, 'Can delete ea academic history', 11, 'delete_eaacademichistory'),
+(34, 'Can add ea news comments', 12, 'add_eanewscomments'),
+(35, 'Can change ea news comments', 12, 'change_eanewscomments'),
+(36, 'Can delete ea news comments', 12, 'delete_eanewscomments'),
+(37, 'Can add ea news feed', 13, 'add_eanewsfeed'),
+(38, 'Can change ea news feed', 13, 'change_eanewsfeed'),
+(39, 'Can delete ea news feed', 13, 'delete_eanewsfeed');
 
 -- --------------------------------------------------------
 
@@ -197,6 +203,8 @@ INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
 (1, 'admin', 'logentry'),
 (11, 'api', 'eaacademichistory'),
 (7, 'api', 'eaattendance'),
+(12, 'api', 'eanewscomments'),
+(13, 'api', 'eanewsfeed'),
 (8, 'api', 'eastudentdetails'),
 (9, 'api', 'eateacherdetails'),
 (10, 'api', 'eausermapping'),
@@ -238,7 +246,8 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 (12, 'auth', '0008_alter_user_username_max_length', '2018-04-16 09:18:12.783728'),
 (13, 'auth', '0009_alter_user_last_name_max_length', '2018-04-16 09:18:13.606727'),
 (14, 'sessions', '0001_initial', '2018-04-16 09:18:14.058729'),
-(15, 'api', '0001_initial', '2018-05-04 09:44:45.963653');
+(15, 'api', '0001_initial', '2018-05-04 09:44:45.963653'),
+(16, 'api', '0002_eanewscomments_eanewsfeed', '2018-05-15 10:53:09.962826');
 
 -- --------------------------------------------------------
 
@@ -314,6 +323,55 @@ INSERT INTO `ea_attendance` (`att_id`, `user_id`, `date`, `user_type`, `attend_s
 (14, 3, '2018-05-05 14:53:04', 'student', 0, 3),
 (15, 1, '2018-05-15 15:03:56', 'student', 0, 1),
 (16, 3, '2018-05-15 15:03:56', 'student', 1, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ea_news_comments`
+--
+
+CREATE TABLE `ea_news_comments` (
+  `comment_id` int(11) NOT NULL,
+  `news_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `description` text,
+  `likes` tinyint(1) NOT NULL DEFAULT '0',
+  `date` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `ea_news_comments`
+--
+
+INSERT INTO `ea_news_comments` (`comment_id`, `news_id`, `user_id`, `description`, `likes`, `date`) VALUES
+(1, 1, 4, 'What is the solution of Question 4?', 1, '2018-05-15 05:20:00'),
+(2, 1, 3, 'Difficult question paper.', 1, '2018-05-15 08:40:15'),
+(3, 2, 4, NULL, 1, '0000-00-00 00:00:00'),
+(4, 2, 3, NULL, 1, '2018-05-15 05:32:00'),
+(5, 2, 2, NULL, 1, '2018-05-15 05:13:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ea_news_feed`
+--
+
+CREATE TABLE `ea_news_feed` (
+  `news_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `description` text NOT NULL,
+  `file_name` varchar(255) DEFAULT NULL,
+  `file_type` varchar(255) DEFAULT NULL,
+  `date` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `ea_news_feed`
+--
+
+INSERT INTO `ea_news_feed` (`news_id`, `user_id`, `description`, `file_name`, `file_type`, `date`) VALUES
+(1, 1, 'Today\'s answer key of Test 1', '5', 'jpg', '2018-05-15 03:15:01'),
+(2, 2, 'Regular Test for MWF batch tomorrow', '5', 'jpg', '2018-05-16 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -481,6 +539,21 @@ ALTER TABLE `ea_attendance`
   ADD KEY `att_user` (`user_id`);
 
 --
+-- Indexes for table `ea_news_comments`
+--
+ALTER TABLE `ea_news_comments`
+  ADD PRIMARY KEY (`comment_id`),
+  ADD KEY `news_have_comments` (`news_id`),
+  ADD KEY `comments_have_users` (`user_id`);
+
+--
+-- Indexes for table `ea_news_feed`
+--
+ALTER TABLE `ea_news_feed`
+  ADD PRIMARY KEY (`news_id`),
+  ADD KEY `user_creates_news` (`user_id`);
+
+--
 -- Indexes for table `ea_student_details`
 --
 ALTER TABLE `ea_student_details`
@@ -518,7 +591,7 @@ ALTER TABLE `auth_group_permissions`
 -- AUTO_INCREMENT for table `auth_permission`
 --
 ALTER TABLE `auth_permission`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `auth_user`
@@ -548,19 +621,31 @@ ALTER TABLE `django_admin_log`
 -- AUTO_INCREMENT for table `django_content_type`
 --
 ALTER TABLE `django_content_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `django_migrations`
 --
 ALTER TABLE `django_migrations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `ea_attendance`
 --
 ALTER TABLE `ea_attendance`
   MODIFY `att_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `ea_news_comments`
+--
+ALTER TABLE `ea_news_comments`
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `ea_news_feed`
+--
+ALTER TABLE `ea_news_feed`
+  MODIFY `news_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `ea_student_details`
@@ -611,6 +696,19 @@ ALTER TABLE `auth_user_user_permissions`
 ALTER TABLE `django_admin_log`
   ADD CONSTRAINT `django_admin_log_content_type_id_c4bce8eb_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
   ADD CONSTRAINT `django_admin_log_user_id_c564eba6_fk` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`);
+
+--
+-- Constraints for table `ea_news_comments`
+--
+ALTER TABLE `ea_news_comments`
+  ADD CONSTRAINT `comments_have_users` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`),
+  ADD CONSTRAINT `news_have_comments` FOREIGN KEY (`news_id`) REFERENCES `ea_news_feed` (`news_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ea_news_feed`
+--
+ALTER TABLE `ea_news_feed`
+  ADD CONSTRAINT `user_creates_news` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `ea_student_details`

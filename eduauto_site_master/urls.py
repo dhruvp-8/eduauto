@@ -18,6 +18,8 @@ from django.urls import path
 from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token
 from django.conf.urls import url, include
+from django.conf import settings
+from django.conf.urls.static import static    
 
 router = routers.DefaultRouter()
 
@@ -29,3 +31,6 @@ urlpatterns = [
 	url(r'api/', include(router.urls)),
 	url(r'api/', include('eduauto_site_master.api.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

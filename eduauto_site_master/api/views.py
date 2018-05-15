@@ -233,3 +233,64 @@ class storeStudentDetails(APIView):
 
 	def post(self, request, *args, **kwargs):
 """
+
+# Get all the news present till date along with the comments
+class getNews(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def get(self, request, *args, **kwargs):
+		news = EaNewsFeed.objects.all().order_by('-date').values()
+		for i in range(0,len(news)):
+			file_name = news[i]['file_name'] + '.' + news[i]['file_type']
+			news[i]['file_name'] = file_name
+			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).values()
+			news[i]['comments'] = comments
+			total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
+			news[i]['total_likes'] = total_likes
+
+		return Response({'news': news})
+
+# Get Only Recent/last n news posts with comments 
+class getRecentNews(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def get(self, request, *args, **kwargs):
+		n = int(self.kwargs.get('no'))
+		news = EaNewsFeed.objects.filter().order_by('-date').values()[:n]
+		for i in range(0,len(news)):
+			file_name = news[i]['file_name'] + '.' + news[i]['file_type']
+			news[i]['file_name'] = file_name
+			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).values()
+			news[i]['comments'] = comments
+			total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
+			news[i]['total_likes'] = total_likes
+
+		return Response({'news': news})
+
+# Get news based on popularity/likes
+class getNewsBasedonPopularity(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def get(self, request, *args, **kwargs):
+		news = EaNewsFeed.objects.all().order_by('-date').values()
+		total_likes_s = []
+		for i in range(0,len(news)):
+			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).values()
+			ts = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
+			total_likes_s.append((news[i]['news_id'], ts))
+
+		sorted_vals = sorted(total_likes_s, key=lambda x:x[1])
+		sorted_vals = sorted_vals[::-1]
+		fin_news = []
+		for j in range(0, len(sorted_vals)):
+			news = EaNewsFeed.objects.filter(news_id=sorted_vals[j][0]).values()
+			for i in range(0,len(news)):
+				file_name = news[i]['file_name'] + '.' + news[i]['file_type']
+				news[i]['file_name'] = file_name
+				comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).values()
+				news[i]['comments'] = comments
+				total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
+				news[i]['total_likes'] = total_likes
+			fin_news.append(news[0])	
+
+		return Response({'news': fin_news})

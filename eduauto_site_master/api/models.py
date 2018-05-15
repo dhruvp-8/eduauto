@@ -71,3 +71,27 @@ class EaUserMapping(models.Model):
 	class Meta:
 		managed = False
 		db_table = 'ea_user_mapping'
+
+class EaNewsFeed(models.Model):
+	news_id = models.AutoField(primary_key=True)
+	user = models.ForeignKey(User, primary_key=True, on_delete=models.CASCADE)
+	description = models.TextField()
+	file_name = models.CharField(max_length=255, blank=True)
+	file_type = models.CharField(max_length=255, blank=True)
+	date = models.DateTimeField(default=datetime.now, blank=True)
+
+	class Meta:
+		managed = False
+		db_table = 'ea_news_feed'
+
+class EaNewsComments(models.Model):
+	comment_id = models.AutoField(primary_key=True)
+	news = models.ForeignKey(EaNewsFeed, on_delete=models.CASCADE)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	description = models.TextField(blank=True)
+	likes = models.BooleanField()
+	date = models.DateTimeField(default=datetime.now, blank=True)
+
+	class Meta:
+		managed = False
+		db_table = 'ea_news_comments'
