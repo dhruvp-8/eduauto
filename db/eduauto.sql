@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 12, 2018 at 01:32 PM
+-- Generation Time: May 15, 2018 at 12:00 PM
 -- Server version: 10.1.29-MariaDB
 -- PHP Version: 7.1.12
 
@@ -268,10 +268,17 @@ INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALU
 
 CREATE TABLE `ea_academic_history` (
   `user_id` int(11) NOT NULL,
-  `university` varchar(255) NOT NULL,
-  `year_of_passing` date NOT NULL,
-  `percentage_scored` int(11) NOT NULL
+  `university` varchar(255) DEFAULT NULL,
+  `year_of_passing` date DEFAULT NULL,
+  `percentage_scored` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `ea_academic_history`
+--
+
+INSERT INTO `ea_academic_history` (`user_id`, `university`, `year_of_passing`, `percentage_scored`) VALUES
+(20, '', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -304,7 +311,9 @@ INSERT INTO `ea_attendance` (`att_id`, `user_id`, `date`, `user_type`, `attend_s
 (11, 1, '2018-05-05 13:59:45', 'student', 1, 1),
 (12, 3, '2018-05-05 13:59:45', 'student', 0, 3),
 (13, 1, '2018-05-05 14:53:04', 'student', 1, 1),
-(14, 3, '2018-05-05 14:53:04', 'student', 0, 3);
+(14, 3, '2018-05-05 14:53:04', 'student', 0, 3),
+(15, 1, '2018-05-15 15:03:56', 'student', 0, 1),
+(16, 3, '2018-05-15 15:03:56', 'student', 1, 3);
 
 -- --------------------------------------------------------
 
@@ -313,30 +322,30 @@ INSERT INTO `ea_attendance` (`att_id`, `user_id`, `date`, `user_type`, `attend_s
 --
 
 CREATE TABLE `ea_student_details` (
-  `s_id` int(11) NOT NULL,
-  `standard` tinyint(4) NOT NULL,
-  `school` varchar(255) NOT NULL,
-  `address` varchar(255) NOT NULL,
-  `branch` varchar(255) NOT NULL,
-  `emergency_number` bigint(20) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `standard` tinyint(4) DEFAULT NULL,
+  `school` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `branch` varchar(255) DEFAULT NULL,
+  `emergency_number` bigint(20) DEFAULT NULL,
   `roll_no` int(11) NOT NULL,
-  `year_of_joining` datetime NOT NULL,
-  `birthdate` date NOT NULL,
-  `contact_no` bigint(20) NOT NULL,
-  `refs` text NOT NULL,
-  `fees_paid` int(11) NOT NULL,
-  `subjects_enrolled` text NOT NULL,
-  `activated_status` tinyint(1) NOT NULL,
-  `year_of_leaving` datetime NOT NULL,
-  `stream` varchar(255) NOT NULL,
-  `board` varchar(255) NOT NULL
+  `year_of_joining` datetime DEFAULT NULL,
+  `birthdate` date DEFAULT NULL,
+  `contact_no` bigint(20) DEFAULT NULL,
+  `refs` text,
+  `fees_paid` int(11) DEFAULT NULL,
+  `subjects_enrolled` text,
+  `activated_status` tinyint(1) DEFAULT NULL,
+  `year_of_leaving` datetime DEFAULT NULL,
+  `stream` varchar(255) DEFAULT NULL,
+  `board` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ea_student_details`
 --
 
-INSERT INTO `ea_student_details` (`s_id`, `standard`, `school`, `address`, `branch`, `emergency_number`, `roll_no`, `year_of_joining`, `birthdate`, `contact_no`, `refs`, `fees_paid`, `subjects_enrolled`, `activated_status`, `year_of_leaving`, `stream`, `board`) VALUES
+INSERT INTO `ea_student_details` (`user_id`, `standard`, `school`, `address`, `branch`, `emergency_number`, `roll_no`, `year_of_joining`, `birthdate`, `contact_no`, `refs`, `fees_paid`, `subjects_enrolled`, `activated_status`, `year_of_leaving`, `stream`, `board`) VALUES
 (1, 8, 'Bright ', '24, Ram nagar Society', 'Devraj', 9825577083, 1, '2018-05-02 08:00:00', '1996-05-08', 8469905736, '', 10000, 'Maths;Science;English;', 0, '2018-05-29 00:00:00', 'Science', 'CBSE'),
 (3, 8, 'Bright', '34, Balajinagar Society ', 'Devraj', 8469905736, 5, '2018-05-22 00:00:00', '1997-03-03', 8469905736, '', 5000, 'Social Science;Maths;Science;', 0, '2018-05-31 00:00:00', 'Science', 'CBSE'),
 (4, 9, 'BHS', '29, Ram nagar Society', 'Pujer', 8469905736, 2, '2018-05-15 00:00:00', '1996-05-08', 9825577083, '', 8000, 'Physics;Chemistry;Maths', 0, '2018-06-15 00:00:00', 'Science', 'GBSE');
@@ -348,16 +357,16 @@ INSERT INTO `ea_student_details` (`s_id`, `standard`, `school`, `address`, `bran
 --
 
 CREATE TABLE `ea_teacher_details` (
-  `t_id` int(11) NOT NULL,
-  `standard` int(11) NOT NULL,
-  `subject` varchar(255) NOT NULL,
-  `address` varchar(255) NOT NULL,
-  `birthdate` date NOT NULL,
-  `year_of_joining` datetime NOT NULL,
-  `activated_status` tinyint(1) NOT NULL,
-  `contact_no` bigint(20) NOT NULL,
-  `salary` int(11) NOT NULL,
-  `bank_details` text NOT NULL
+  `user_id` int(11) NOT NULL,
+  `standard` int(11) DEFAULT NULL,
+  `subject` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `birthdate` date DEFAULT NULL,
+  `year_of_joining` datetime DEFAULT NULL,
+  `activated_status` tinyint(1) DEFAULT NULL,
+  `contact_no` bigint(20) DEFAULT NULL,
+  `salary` int(11) DEFAULT NULL,
+  `bank_details` text
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -475,13 +484,13 @@ ALTER TABLE `ea_attendance`
 -- Indexes for table `ea_student_details`
 --
 ALTER TABLE `ea_student_details`
-  ADD PRIMARY KEY (`s_id`);
+  ADD PRIMARY KEY (`user_id`);
 
 --
 -- Indexes for table `ea_teacher_details`
 --
 ALTER TABLE `ea_teacher_details`
-  ADD PRIMARY KEY (`t_id`);
+  ADD PRIMARY KEY (`user_id`);
 
 --
 -- Indexes for table `ea_user_mapping`
@@ -515,7 +524,7 @@ ALTER TABLE `auth_permission`
 -- AUTO_INCREMENT for table `auth_user`
 --
 ALTER TABLE `auth_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `auth_user_groups`
@@ -551,19 +560,19 @@ ALTER TABLE `django_migrations`
 -- AUTO_INCREMENT for table `ea_attendance`
 --
 ALTER TABLE `ea_attendance`
-  MODIFY `att_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `att_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `ea_student_details`
 --
 ALTER TABLE `ea_student_details`
-  MODIFY `s_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `ea_teacher_details`
 --
 ALTER TABLE `ea_teacher_details`
-  MODIFY `t_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Constraints for dumped tables
@@ -607,7 +616,13 @@ ALTER TABLE `django_admin_log`
 -- Constraints for table `ea_student_details`
 --
 ALTER TABLE `ea_student_details`
-  ADD CONSTRAINT `student_user` FOREIGN KEY (`s_id`) REFERENCES `ea_user_mapping` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `student_user` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ea_teacher_details`
+--
+ALTER TABLE `ea_teacher_details`
+  ADD CONSTRAINT `teacher_is_a_user` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `ea_user_mapping`

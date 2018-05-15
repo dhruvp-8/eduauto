@@ -4,39 +4,39 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class EaStudentDetails(models.Model):
-	s_id = models.AutoField(primary_key=True)
-	standard = models.PositiveSmallIntegerField()
-	school = models.CharField(max_length=255)
-	address = models.CharField(max_length=255)
-	branch = models.CharField(max_length=255)
-	emergency_number = models.BigIntegerField()
+	user = models.ForeignKey(User, primary_key=True, on_delete=models.CASCADE)
+	standard = models.PositiveSmallIntegerField(blank=True)
+	school = models.CharField(max_length=255,blank=True)
+	address = models.CharField(max_length=255, blank=True)
+	branch = models.CharField(max_length=255, blank=True)
+	emergency_number = models.BigIntegerField(blank=True)
 	roll_no = models.IntegerField()
-	year_of_joining = models.DateTimeField()
-	birthdate = models.DateField()
-	contact_no = models.BigIntegerField()
-	refs = models.TextField()
-	fees_paid = models.IntegerField()
-	subjects_enrolled = models.TextField()
-	activated_status = models.BooleanField()
-	year_of_leaving = models.DateTimeField()
-	stream = models.CharField(max_length=255)
-	board = models.CharField(max_length=255)
+	year_of_joining = models.DateTimeField(blank=True)
+	birthdate = models.DateField(blank=True)
+	contact_no = models.BigIntegerField(blank=True)
+	refs = models.TextField(blank=True)
+	fees_paid = models.IntegerField(blank=True)
+	subjects_enrolled = models.TextField(blank=True)
+	activated_status = models.BooleanField(blank=True)
+	year_of_leaving = models.DateTimeField(blank=True)
+	stream = models.CharField(max_length=255, blank=True)
+	board = models.CharField(max_length=255, blank=True)
 
 	class Meta:
 		managed = False
 		db_table = 'ea_student_details'
 
 class EaTeacherDetails(models.Model):
-	t_id = models.AutoField(primary_key=True)
-	standard = models.IntegerField()
-	subject = models.CharField(max_length=255) 
-	address = models.CharField(max_length=255)
-	birthdate = models.DateField()
-	year_of_joining = models.DateTimeField()
-	activated_status = models.BooleanField()
-	contact_no = models.BigIntegerField()
-	salary = models.IntegerField()
-	bank_details = models.TextField()
+	user = models.ForeignKey(User, primary_key=True, on_delete=models.CASCADE)
+	standard = models.IntegerField(blank=True)
+	subject = models.CharField(max_length=255, blank=True) 
+	address = models.CharField(max_length=255, blank=True)
+	birthdate = models.DateField(blank=True)
+	year_of_joining = models.DateTimeField(blank=True)
+	activated_status = models.BooleanField(blank=True)
+	contact_no = models.BigIntegerField(blank=True)
+	salary = models.IntegerField(blank=True)
+	bank_details = models.TextField(blank=True)
 
 	class Meta:
 		managed = False
@@ -55,17 +55,17 @@ class EaAttendance(models.Model):
 		db_table = 'ea_attendance'
 
 class EaAcademicHistory(models.Model):
-	user_id = models.ForeignKey(User, primary_key=True, on_delete=models.CASCADE)
-	university = models.CharField(max_length=255)
-	year_of_passing = models.DateField()
-	percentage_scored = models.IntegerField()
+	user = models.ForeignKey(User, primary_key=True, on_delete=models.CASCADE)
+	university = models.CharField(max_length=255,blank=True)
+	year_of_passing = models.DateField(blank=True)
+	percentage_scored = models.IntegerField(blank=True)
 
 	class Meta:
 		managed = False
 		db_table = 'ea_academic_history'
 
 class EaUserMapping(models.Model):
-	user_id = models.ForeignKey(User, primary_key=True, on_delete=models.CASCADE)
+	user = models.ForeignKey(User, primary_key=True, on_delete=models.CASCADE)
 	user_type = models.CharField(max_length=255)
 
 	class Meta:

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from .models import *
+from django.db.models import Q
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -24,23 +25,71 @@ class UserListAPIView(APIView):
 
 # Update the data of the user into the DB
 class UserUpdateAPIView(UpdateAPIView):
-    queryset = User.objects.filter() 
-    serializer_class = UserCreateUpdateSerializer
+	queryset = User.objects.filter() 
+	serializer_class = UserCreateUpdateSerializer
 
 # Delete a specific user from DB
 class UserDeleteAPIView(DestroyAPIView):
-    queryset = User.objects.filter() 
-    serializer_class = UserSerializer  
+	queryset = User.objects.filter() 
+	serializer_class = UserSerializer  
   
 # Fetch all possible users
 class UserDetailAPIView(RetrieveAPIView):
-    queryset = User.objects.filter() 
-    serializer_class = UserSerializer
+	queryset = User.objects.filter() 
+	serializer_class = UserSerializer
  
 # Allow to create a new user into DB
-class UserCreateAPIView(CreateAPIView):
-    queryset = User.objects.filter() 
-    serializer_class = UserCreateSerializer
+class UserCreateAPIView(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def post(self, request, *args, **kwargs):
+		data = request.data
+		usern = User.objects.filter(Q(username=data["username"])).distinct()
+		usere = User.objects.filter(Q(email=data["email"])).distinct()
+		if usern.exists() and usern.count() == 1:
+			return Response({'error': 'Username already exists.'})
+		elif usere.exists() and usere.count() == 1:
+			return Response({'error': 'Email already exists.'})
+		else:	
+			first_name = data['first_name']
+			last_name = data['last_name']
+			username = data['username']
+			email = data['email']
+			password = data['password']
+			u_type = data['u_type']
+			user_obj = User(
+				first_name = first_name,
+				last_name = last_name,
+				username = username,
+				email = email
+			)
+			user_obj.set_password(password)
+			user_obj.save()
+
+			user_mapping_obj = EaUserMapping()
+			user_mapping_obj.user_id = user_obj.id
+			user_mapping_obj.user_type = u_type
+			user_mapping_obj.save()
+
+			if u_type == "student":
+				student_details_obj = EaStudentDetails()
+				student_details_obj.user_id = user_obj.id
+				# Create Roll Number for student
+				student_details_obj.roll_no = user_obj.id
+				student_details_obj.save()
+
+				academic_history_obj = EaAcademicHistory()
+				academic_history_obj.user_id = user_obj.id
+				academic_history_obj.save()
+			elif u_type == "teacher":
+				teacher_details_obj = EaTeacherDetails()
+				teacher_details_obj.user_id = user_obj.id
+				teacher_details_obj.save()
+			else:
+				user_obj.is_staff = 1
+				user_obj.save()
+				
+			return Response({'success': 'User created successfully', 'first_name': first_name, 'last_name': last_name, 'username': username, 'email': email})
 
 # Allow user to login to the system
 class UserLoginAPIView(APIView):
@@ -97,12 +146,12 @@ class getStudentList(APIView):
 		branch = self.kwargs.get('branch')
 		standard = self.kwargs.get('standard')
 		subject = self.kwargs.get('subject')
-		roll_no = EaStudentDetails.objects.filter(branch=branch, standard=standard, subjects_enrolled__contains=subject).values('roll_no','s_id')
+		roll_no = EaStudentDetails.objects.filter(branch=branch, standard=standard, subjects_enrolled__contains=subject).values('roll_no','user_id')
 		user_type = 'student'
 		for i in range(0,len(roll_no)):
 			fin = {}
-			name = User.objects.filter(id=roll_no[i]['s_id']).values('id','first_name', 'last_name')
-			fin['user_id'] = roll_no[i]['s_id']
+			name = User.objects.filter(id=roll_no[i]['user_id']).values('id','first_name', 'last_name')
+			fin['user_id'] = roll_no[i]['user_id']
 			fin['user_type'] = user_type
 			fin['roll_no'] = roll_no[i]['roll_no']
 			fin['name'] = name[0]['first_name'] + ' ' + name[0]['last_name']
@@ -177,4 +226,10 @@ class calculateAttendanceBySpecificDate(APIView):
 		absent_days = EaAttendance.objects.filter(user_id=user_id, attend_status=0, date__range=[specific_date, next_date]).count()
 
 		return Response({'user_id': user_id, 'specific_date': specific_date, 'present_days': present_days, 'absent_days':absent_days, 'total_teaching_days': total_teaching_days})
+"""
+# Add Student Details 
+class storeStudentDetails(APIView):
+	renderer_classes = (JSONRenderer, )
 
+	def post(self, request, *args, **kwargs):
+"""
