@@ -29,5 +29,6 @@ urlpatterns = [
 	url(r'^news/(?P<news_id>\d+)/$', getNewsOnId.as_view(), name='get_news_on_id'),
 	url(r'^news/create/$', addNewsFeed.as_view(), name='add_news_feed'),
 	url(r'^news/comments/create/$', addComments.as_view(), name='add_comments'),
-	url(r'^news/likes/create/$', addLikes.as_view(), name='add_likes'),		
+	url(r'^news/likes/create/$', addLikes.as_view(), name='add_likes'),
+	url(r'^news/likes/remove/$', removeLikes.as_view(), name='remove_likes'),		
 ]

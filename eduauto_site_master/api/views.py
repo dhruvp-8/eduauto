@@ -383,12 +383,48 @@ class addLikes(APIView):
 		comment_id = int(ks.comment_id) + 1
 		news_id = data["news_id"]
 		user_id = data["user_id"]
+		ch = EaNewsComments.objects.filter(news_id=news_id,user_id=user_id).count()
+		if ch < 1:
+			ea_news_comment_obj = EaNewsComments()
+			ea_news_comment_obj.comment_id = comment_id
+			ea_news_comment_obj.news_id = news_id
+			ea_news_comment_obj.user_id = user_id
+			ea_news_comment_obj.likes = True
 
-		ea_news_comment_obj = EaNewsComments()
-		ea_news_comment_obj.comment_id = comment_id
-		ea_news_comment_obj.news_id = news_id
-		ea_news_comment_obj.user_id = user_id
-		ea_news_comment_obj.likes = True
+			ea_news_comment_obj.save()
+			return Response({'success': 'Like saved successfully.', 'like_id': comment_id, 'user_id': user_id, 'date': ea_news_comment_obj.date}, status=HTTP_200_OK)
+		else:
+			kp = EaNewsComments.objects.filter(news_id=news_id, user_id=user_id, likes=0).count()
+			if kp == 1:
+				ea_news_comment_obj = EaNewsComments.objects.get(news_id=news_id, user_id=user_id, likes=0)
+				ea_news_comment_obj.likes = True
 
-		ea_news_comment_obj.save()
-		return Response({'success': 'Like saved successfully.', 'like_id': comment_id, 'user_id': user_id, 'date': ea_news_comment_obj.date}, status=HTTP_200_OK)
+				ea_news_comment_obj.save()
+				return Response({'success': 'Like Updated successfully.', 'like_id': ea_news_comment_obj.comment_id, 'user_id': user_id, 'date': ea_news_comment_obj.date}, status=HTTP_200_OK)
+			else:
+				return Response({'error': 'This User has already liked the post.'}, status=HTTP_400_BAD_REQUEST)
+
+# Unlike a particular news feed
+class removeLikes(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def post(self, request, *args, **kwargs):
+		data = request.data
+		news_id = data["news_id"]
+		user_id = data["user_id"]
+
+		ch = EaNewsComments.objects.filter(news_id=news_id,user_id=user_id).count()
+		print(ch)
+		if ch > 0:
+			kp = EaNewsComments.objects.filter(news_id=news_id, user_id=user_id, likes=1).count()
+			if kp == 1:
+				ea_news_comment_obj = EaNewsComments.objects.get(news_id=news_id, user_id=user_id, likes=1)
+				ea_news_comment_obj.likes = False
+
+				ea_news_comment_obj.save()
+				return Response({'success': 'Unliked the post successfully.', 'unlike_id': ea_news_comment_obj.comment_id, 'user_id': user_id, 'date': ea_news_comment_obj.date}, status=HTTP_200_OK)
+			else:
+				return Response({'error': 'This User has already unliked the post.'}, status=HTTP_400_BAD_REQUEST)
+		else:
+			return Response({'error': 'User has not liked this post.'}, status=HTTP_400_BAD_REQUEST)
+		
