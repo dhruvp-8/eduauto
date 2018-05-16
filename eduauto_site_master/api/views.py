@@ -8,10 +8,13 @@ from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import *
 from datetime import datetime
-from datetime import timedelta  
+from datetime import timedelta
+from eduauto_site_master import settings
 
+from django.core.files.storage import FileSystemStorage
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 # Display all the users in the database
@@ -109,7 +112,7 @@ class getBranch(APIView):
 
 	def get(self, request, *args, **kwargs):
 		branch = EaStudentDetails.objects.values_list('branch', flat=True).order_by('branch').distinct()
-		return Response({'branch': branch})
+		return Response({'branch': branch}, status=HTTP_200_OK)
 
 # Get List of all Standards for selection
 class getStandard(APIView):
@@ -117,7 +120,7 @@ class getStandard(APIView):
 
 	def get(self, request, *args, **kwargs):
 		standard = EaStudentDetails.objects.values_list('standard', flat=True).order_by('standard').distinct()
-		return Response({'standard': standard})
+		return Response({'standard': standard}, status=HTTP_200_OK)
 
 # Get List of all Subjects for selection
 class getSubjects(APIView):
@@ -134,7 +137,7 @@ class getSubjects(APIView):
 		for i in fin_subs:
 			if i != '':
 				subs.append(i)		
-		return Response({'subjects': subs})
+		return Response({'subjects': subs}, status=HTTP_200_OK)
 
 
 # Get Student Data List for taking the Attendance
@@ -156,7 +159,7 @@ class getStudentList(APIView):
 			fin['roll_no'] = roll_no[i]['roll_no']
 			fin['name'] = name[0]['first_name'] + ' ' + name[0]['last_name']
 			studentlist.append(fin)
-		return Response({'studentlist': studentlist})
+		return Response({'studentlist': studentlist}, status=HTTP_200_OK)
 
 # Enter Attendance Data in the DB
 class storeAttendance(APIView):
@@ -194,7 +197,7 @@ class calculateAttendance(APIView):
 		absent_days = EaAttendance.objects.filter(user_id=user_id, attend_status=0).count()
 		percent = (present_days/total_teaching_days)*100
 
-		return Response({'user_id': user_id, 'present_days': present_days, 'absent_days':absent_days, 'total_teaching_days': total_teaching_days,'percentage': percent})
+		return Response({'user_id': user_id, 'present_days': present_days, 'absent_days':absent_days, 'total_teaching_days': total_teaching_days,'percentage': percent}, status=HTTP_200_OK)
 
 # Calculate Attendance by range of dates
 class calculateAttendanceByRangeDate(APIView):
@@ -209,7 +212,7 @@ class calculateAttendanceByRangeDate(APIView):
 		absent_days = EaAttendance.objects.filter(user_id=user_id, attend_status=0, date__range=[start_date, end_date]).count()
 		percent = (present_days/total_teaching_days)*100
 		
-		return Response({'user_id': user_id, 'start_date': start_date, 'end_date': end_date, 'total_teaching_days': total_teaching_days, 'present_days': present_days, 'absent_days': absent_days, 'percentage': percent})
+		return Response({'user_id': user_id, 'start_date': start_date, 'end_date': end_date, 'total_teaching_days': total_teaching_days, 'present_days': present_days, 'absent_days': absent_days, 'percentage': percent}, status=HTTP_200_OK)
 
 # Calculate Attendance by a specific date
 class calculateAttendanceBySpecificDate(APIView):
@@ -225,7 +228,7 @@ class calculateAttendanceBySpecificDate(APIView):
 		present_days = EaAttendance.objects.filter(user_id=user_id, attend_status=1, date__range=[specific_date, next_date]).count()
 		absent_days = EaAttendance.objects.filter(user_id=user_id, attend_status=0, date__range=[specific_date, next_date]).count()
 
-		return Response({'user_id': user_id, 'specific_date': specific_date, 'present_days': present_days, 'absent_days':absent_days, 'total_teaching_days': total_teaching_days})
+		return Response({'user_id': user_id, 'specific_date': specific_date, 'present_days': present_days, 'absent_days':absent_days, 'total_teaching_days': total_teaching_days}, status=HTTP_200_OK)
 """
 # Add Student Details 
 class storeStudentDetails(APIView):
@@ -243,12 +246,12 @@ class getNews(APIView):
 		for i in range(0,len(news)):
 			file_name = news[i]['file_name'] + '.' + news[i]['file_type']
 			news[i]['file_name'] = file_name
-			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).values()
+			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
 			news[i]['comments'] = comments
 			total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
 			news[i]['total_likes'] = total_likes
 
-		return Response({'news': news})
+		return Response({'news': news}, status=HTTP_200_OK)
 
 # Get Only Recent/last n news posts with comments 
 class getRecentNews(APIView):
@@ -260,12 +263,12 @@ class getRecentNews(APIView):
 		for i in range(0,len(news)):
 			file_name = news[i]['file_name'] + '.' + news[i]['file_type']
 			news[i]['file_name'] = file_name
-			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).values()
+			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
 			news[i]['comments'] = comments
 			total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
 			news[i]['total_likes'] = total_likes
 
-		return Response({'news': news})
+		return Response({'news': news}, status=HTTP_200_OK)
 
 # Get news based on popularity/likes
 class getNewsBasedonPopularity(APIView):
@@ -275,7 +278,7 @@ class getNewsBasedonPopularity(APIView):
 		news = EaNewsFeed.objects.all().order_by('-date').values()
 		total_likes_s = []
 		for i in range(0,len(news)):
-			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).values()
+			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
 			ts = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
 			total_likes_s.append((news[i]['news_id'], ts))
 
@@ -287,10 +290,105 @@ class getNewsBasedonPopularity(APIView):
 			for i in range(0,len(news)):
 				file_name = news[i]['file_name'] + '.' + news[i]['file_type']
 				news[i]['file_name'] = file_name
-				comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).values()
+				comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
 				news[i]['comments'] = comments
 				total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
 				news[i]['total_likes'] = total_likes
 			fin_news.append(news[0])	
 
-		return Response({'news': fin_news})
+		return Response({'news': fin_news}, status=HTTP_200_OK)
+
+# Get News Based on ID
+class getNewsOnId(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def get(self, request, *args, **kwargs):
+		news_id = int(self.kwargs.get('news_id'))
+		news = EaNewsFeed.objects.filter(news_id=news_id).values()
+		comments = EaNewsComments.objects.filter(news_id=news_id).exclude(description='').values()
+		total_likes = EaNewsComments.objects.filter(news_id=news_id, likes=1).count()
+		tmp = news[0]
+		tmp["comments"] = comments
+		tmp["total_likes"] = total_likes
+
+		return Response({'news': tmp}, status=HTTP_200_OK)
+
+# Add news to the feed
+class addNewsFeed(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def post(self, request, *args, **kwargs):
+		ea_news_feed_obj = EaNewsFeed()
+		data = request.data
+		user_id = data["user_id"]
+		description = data["description"]
+		myfile = data["myfile"] 
+		tmp = str(myfile)
+		im = tmp.split(".")
+		if len(im) > 2:
+			return Response({'error': 'File name is should not contain more than 1 dot.'}, status=HTTP_400_BAD_REQUEST)
+		else:
+			im_name = im[0]
+			im_type = im[1]
+			dt = datetime.now()
+			ml = str(dt.microsecond)
+			f_im_name = im_name + '_' + ml
+			if im_type.lower() == 'jpg' or im_type.lower() == 'png' or im_type.lower() == 'bmp' or im_type.lower() == 'jpeg' or im_type.lower() == 'pdf' or im_type.lower() == 'txt' or im_type.lower() == 'docx' or im_type.lower() == 'xlsx':
+				ks = EaNewsFeed.objects.all().last()
+				news_id = int(ks.news_id) + 1
+				ea_news_feed_obj.news_id = news_id
+				ea_news_feed_obj.user_id = user_id
+				ea_news_feed_obj.description = description
+				ea_news_feed_obj.file_name = f_im_name
+				ea_news_feed_obj.file_type = im[1]
+				ea_news_feed_obj.save()
+				fin_name = f_im_name + '.' + im_type
+				fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT)
+				filename = fs.save(fin_name, myfile)
+				return Response({'success': 'News Feed created successfully.', 'news_id': news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
+			else:
+				return Response({'error': 'File type must be jpg, jpeg, bmp, png, pdf, txt, docx, xlsx.'}, status=HTTP_400_BAD_REQUEST)			
+
+# Add Comments to the News Feed
+class addComments(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def post(self, request, *args, **kwargs):
+		data = request.data
+		ks = EaNewsComments.objects.all().last()
+		comment_id = int(ks.comment_id) + 1
+		news_id = data["news_id"]
+		user_id = data["user_id"]
+		description = data["description"]
+
+		if description != '':
+			ea_news_comment_obj = EaNewsComments()
+			ea_news_comment_obj.comment_id = comment_id
+			ea_news_comment_obj.news_id = news_id
+			ea_news_comment_obj.user_id = user_id
+			ea_news_comment_obj.description = description
+
+			ea_news_comment_obj.save()
+			return Response({'success': 'Comment saved successfully.', 'comment_id': comment_id, 'user_id': user_id, 'date': ea_news_comment_obj.date}, status=HTTP_200_OK)
+		else:
+			return Response({'error': 'Please Enter the comment to continue.'}, status=HTTP_400_BAD_REQUEST)
+
+# Like a particular News Feed
+class addLikes(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def post(self, request, *args, **kwargs):
+		data = request.data
+		ks = EaNewsComments.objects.all().last()
+		comment_id = int(ks.comment_id) + 1
+		news_id = data["news_id"]
+		user_id = data["user_id"]
+
+		ea_news_comment_obj = EaNewsComments()
+		ea_news_comment_obj.comment_id = comment_id
+		ea_news_comment_obj.news_id = news_id
+		ea_news_comment_obj.user_id = user_id
+		ea_news_comment_obj.likes = True
+
+		ea_news_comment_obj.save()
+		return Response({'success': 'Like saved successfully.', 'like_id': comment_id, 'user_id': user_id, 'date': ea_news_comment_obj.date}, status=HTTP_200_OK)

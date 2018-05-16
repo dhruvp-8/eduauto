@@ -134,6 +134,13 @@ USE_L10N = True
 USE_TZ = True
 
 
+# Maximum Data Post Request Limit Setter
+DATA_UPLOAD_MAX_MEMORY_SIZE = 100000000
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+
+# Media Storage Root
+MEDIA_STORAGE_ROOT = BASE_DIR + '/static/files/'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 

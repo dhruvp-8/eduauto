@@ -25,5 +25,9 @@ urlpatterns = [
 	# News Feed
 	url(r'^news/$', getNews.as_view(), name='get_news'),
 	url(r'^news/recent/(?P<no>\d+)/$', getRecentNews.as_view(), name='get_recent_news'),
-	url(r'^news/popularity/$', getNewsBasedonPopularity.as_view(), name='get_news_based_on_popularity'),		
+	url(r'^news/popularity/$', getNewsBasedonPopularity.as_view(), name='get_news_based_on_popularity'),
+	url(r'^news/(?P<news_id>\d+)/$', getNewsOnId.as_view(), name='get_news_on_id'),
+	url(r'^news/create/$', addNewsFeed.as_view(), name='add_news_feed'),
+	url(r'^news/comments/create/$', addComments.as_view(), name='add_comments'),
+	url(r'^news/likes/create/$', addLikes.as_view(), name='add_likes'),		
 ]
