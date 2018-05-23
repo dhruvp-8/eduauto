@@ -319,10 +319,11 @@ class addNewsFeed(APIView):
 
 	def post(self, request, *args, **kwargs):
 		ea_news_feed_obj = EaNewsFeed()
-		data = request.data
-		user_id = data["user_id"]
-		description = data["description"]
-		myfile = data["myfile"] 
+		data = request.POST
+		s = request.FILES
+		user_id = data.get("user_id")
+		description = data.get("description")
+		myfile = s["myfile"] 
 		tmp = str(myfile)
 		im = tmp.split(".")
 		if len(im) > 2:
@@ -414,7 +415,6 @@ class removeLikes(APIView):
 		user_id = data["user_id"]
 
 		ch = EaNewsComments.objects.filter(news_id=news_id,user_id=user_id).count()
-		print(ch)
 		if ch > 0:
 			kp = EaNewsComments.objects.filter(news_id=news_id, user_id=user_id, likes=1).count()
 			if kp == 1:
