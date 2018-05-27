@@ -11,14 +11,12 @@ class EaStudentDetails(models.Model):
 	branch = models.CharField(max_length=255, blank=True)
 	emergency_number = models.BigIntegerField(blank=True)
 	roll_no = models.IntegerField()
-	year_of_joining = models.DateTimeField(blank=True)
+	year_of_joining = models.CharField(max_length=4,blank=True)
 	birthdate = models.DateField(blank=True)
 	contact_no = models.BigIntegerField(blank=True)
 	refs = models.TextField(blank=True)
-	fees_paid = models.IntegerField(blank=True)
 	subjects_enrolled = models.TextField(blank=True)
-	activated_status = models.BooleanField(blank=True)
-	year_of_leaving = models.DateTimeField(blank=True)
+	year_of_leaving = models.CharField(max_length=4,blank=True)
 	stream = models.CharField(max_length=255, blank=True)
 	board = models.CharField(max_length=255, blank=True)
 
@@ -95,3 +93,15 @@ class EaNewsComments(models.Model):
 	class Meta:
 		managed = False
 		db_table = 'ea_news_comments'
+
+class EaFeesAccounts(models.Model):
+	trans_id = models.AutoField(primary_key=True)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	paid_status = models.BooleanField(default=False)
+	fees_paid = models.IntegerField(blank=True)
+	total_fees = models.IntegerField(blank=True)
+	date = models.DateTimeField(default=datetime.now, blank=True)
+
+	class Meta:
+		managed = False
+		db_table = 'ea_fees_accounts'

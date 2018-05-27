@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 15, 2018 at 02:31 PM
+-- Generation Time: May 27, 2018 at 12:30 PM
 -- Server version: 10.1.29-MariaDB
 -- PHP Version: 7.1.12
 
@@ -101,7 +101,10 @@ INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALU
 (36, 'Can delete ea news comments', 12, 'delete_eanewscomments'),
 (37, 'Can add ea news feed', 13, 'add_eanewsfeed'),
 (38, 'Can change ea news feed', 13, 'change_eanewsfeed'),
-(39, 'Can delete ea news feed', 13, 'delete_eanewsfeed');
+(39, 'Can delete ea news feed', 13, 'delete_eanewsfeed'),
+(40, 'Can add ea fees accounts', 14, 'add_eafeesaccounts'),
+(41, 'Can change ea fees accounts', 14, 'change_eafeesaccounts'),
+(42, 'Can delete ea fees accounts', 14, 'delete_eafeesaccounts');
 
 -- --------------------------------------------------------
 
@@ -131,7 +134,8 @@ INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `userna
 (1, 'pbkdf2_sha256$100000$6eYueyDCh8yS$mtlj70TIKnAB0VZC7SAtxXPLY5FiNxuT2vSJmhhMP0c=', '2018-04-25 08:01:54.100544', 1, 'dhruv', 'Dhruv', 'Patel', 'dhruvpatel5738@gmail.com', 0, 1, '2018-04-16 09:20:13.403775'),
 (2, 'pbkdf2_sha256$100000$2EfZQTt3LfH2$ox457lAv6EHT3C9iPIQmW24xf/qtkA7EuG9yFpsmuak=', NULL, 1, 'bhaumik', 'Bhaumik', 'Ichhaporia', 'bhaumik.ichhaporia59@gmail.com', 0, 1, '2018-04-25 08:02:19.000000'),
 (3, 'pbkdf2_sha256$100000$0OE7W3YnCC4w$3ogWwdhUVcocTBM4D7l2pkO1Ded2Jo5r64fwpRtos/c=', NULL, 1, 'prit123', 'Prit', 'Thakkar', 'pritthakkar@gmail.com', 0, 1, '2018-05-04 10:09:12.074985'),
-(4, 'pbkdf2_sha256$100000$yy6xIu84CdXa$/EwWng/QUkCr+eBkydg3lj/hZCdTBpvTudEU1owFJfQ=', NULL, 0, 'shail123', 'Shail', 'Shah', 'shailshah@gmail.com', 0, 1, '2018-05-04 10:09:59.379928');
+(4, 'pbkdf2_sha256$100000$yy6xIu84CdXa$/EwWng/QUkCr+eBkydg3lj/hZCdTBpvTudEU1owFJfQ=', NULL, 0, 'shail123', 'Shail', 'Shah', 'shailshah@gmail.com', 0, 1, '2018-05-04 10:09:59.379928'),
+(6, 'pbkdf2_sha256$100000$gL4aejiPEiLD$I2MMcC2670Kpo3taol98MVWOKwzOiHlP1LFqGkwcW4s=', NULL, 0, 'dxa123', 'Dxa', 'Patel', 'dxapatel0910@gmail.com', 0, 1, '2018-05-27 09:10:33.827874');
 
 -- --------------------------------------------------------
 
@@ -203,6 +207,7 @@ INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
 (1, 'admin', 'logentry'),
 (11, 'api', 'eaacademichistory'),
 (7, 'api', 'eaattendance'),
+(14, 'api', 'eafeesaccounts'),
 (12, 'api', 'eanewscomments'),
 (13, 'api', 'eanewsfeed'),
 (8, 'api', 'eastudentdetails'),
@@ -247,7 +252,8 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 (13, 'auth', '0009_alter_user_last_name_max_length', '2018-04-16 09:18:13.606727'),
 (14, 'sessions', '0001_initial', '2018-04-16 09:18:14.058729'),
 (15, 'api', '0001_initial', '2018-05-04 09:44:45.963653'),
-(16, 'api', '0002_eanewscomments_eanewsfeed', '2018-05-15 10:53:09.962826');
+(16, 'api', '0002_eanewscomments_eanewsfeed', '2018-05-15 10:53:09.962826'),
+(17, 'api', '0003_eafeesaccounts', '2018-05-27 09:08:51.362791');
 
 -- --------------------------------------------------------
 
@@ -287,6 +293,8 @@ CREATE TABLE `ea_academic_history` (
 --
 
 INSERT INTO `ea_academic_history` (`user_id`, `university`, `year_of_passing`, `percentage_scored`) VALUES
+(5, '', NULL, NULL),
+(6, '', NULL, NULL),
 (20, '', NULL, NULL);
 
 -- --------------------------------------------------------
@@ -327,6 +335,28 @@ INSERT INTO `ea_attendance` (`att_id`, `user_id`, `date`, `user_type`, `attend_s
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `ea_fees_accounts`
+--
+
+CREATE TABLE `ea_fees_accounts` (
+  `trans_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `paid_status` tinyint(1) NOT NULL DEFAULT '0',
+  `fees_paid` int(11) DEFAULT NULL,
+  `total_fees` int(11) DEFAULT NULL,
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `ea_fees_accounts`
+--
+
+INSERT INTO `ea_fees_accounts` (`trans_id`, `user_id`, `paid_status`, `fees_paid`, `total_fees`, `date`) VALUES
+(1, 6, 0, 3000, 8000, '2018-05-27 14:45:33');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `ea_news_comments`
 --
 
@@ -344,11 +374,13 @@ CREATE TABLE `ea_news_comments` (
 --
 
 INSERT INTO `ea_news_comments` (`comment_id`, `news_id`, `user_id`, `description`, `likes`, `date`) VALUES
-(1, 1, 4, 'What is the solution of Question 4?', 1, '2018-05-15 05:20:00'),
-(2, 1, 3, 'Difficult question paper.', 1, '2018-05-15 08:40:15'),
+(1, 1, 4, 'What is the solution of Question 4?', 0, '2018-05-15 05:20:00'),
+(2, 1, 3, 'Difficult question paper.', 0, '2018-05-15 08:40:15'),
 (3, 2, 4, NULL, 1, '0000-00-00 00:00:00'),
 (4, 2, 3, NULL, 1, '2018-05-15 05:32:00'),
-(5, 2, 2, NULL, 1, '2018-05-15 05:13:00');
+(5, 2, 2, NULL, 1, '2018-05-15 05:13:00'),
+(6, 3, 4, 'Thanks for this.', 0, '2018-05-16 15:37:37'),
+(7, 3, 3, '', 1, '2018-05-16 17:26:06');
 
 -- --------------------------------------------------------
 
@@ -370,8 +402,11 @@ CREATE TABLE `ea_news_feed` (
 --
 
 INSERT INTO `ea_news_feed` (`news_id`, `user_id`, `description`, `file_name`, `file_type`, `date`) VALUES
-(1, 1, 'Today\'s answer key of Test 1', '5', 'jpg', '2018-05-15 03:15:01'),
-(2, 2, 'Regular Test for MWF batch tomorrow', '5', 'jpg', '2018-05-16 00:00:00');
+(1, 1, 'Answer Key of the question paper!', '11_678489', 'jpg', '2018-05-16 15:06:30'),
+(2, 2, 'Early classes at 8AM!', '6_495397', 'jpg', '2018-05-16 15:13:29'),
+(3, 1, 'Important Document regarding your fees!', 'Dad_Ticket_334446', 'pdf', '2018-05-16 15:21:29'),
+(4, 1, 'Important Document regarding your fees!', 'Dad_Ticket_829555', 'pdf', '2018-05-23 17:24:44'),
+(5, 1, 'Important Document regarding your fees!', 'Dad_Ticket_178560', 'pdf', '2018-05-23 17:24:56');
 
 -- --------------------------------------------------------
 
@@ -387,14 +422,12 @@ CREATE TABLE `ea_student_details` (
   `branch` varchar(255) DEFAULT NULL,
   `emergency_number` bigint(20) DEFAULT NULL,
   `roll_no` int(11) NOT NULL,
-  `year_of_joining` datetime DEFAULT NULL,
+  `year_of_joining` varchar(4) DEFAULT NULL,
   `birthdate` date DEFAULT NULL,
   `contact_no` bigint(20) DEFAULT NULL,
   `refs` text,
-  `fees_paid` int(11) DEFAULT NULL,
   `subjects_enrolled` text,
-  `activated_status` tinyint(1) DEFAULT NULL,
-  `year_of_leaving` datetime DEFAULT NULL,
+  `year_of_leaving` varchar(4) DEFAULT NULL,
   `stream` varchar(255) DEFAULT NULL,
   `board` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -403,10 +436,11 @@ CREATE TABLE `ea_student_details` (
 -- Dumping data for table `ea_student_details`
 --
 
-INSERT INTO `ea_student_details` (`user_id`, `standard`, `school`, `address`, `branch`, `emergency_number`, `roll_no`, `year_of_joining`, `birthdate`, `contact_no`, `refs`, `fees_paid`, `subjects_enrolled`, `activated_status`, `year_of_leaving`, `stream`, `board`) VALUES
-(1, 8, 'Bright ', '24, Ram nagar Society', 'Devraj', 9825577083, 1, '2018-05-02 08:00:00', '1996-05-08', 8469905736, '', 10000, 'Maths;Science;English;', 0, '2018-05-29 00:00:00', 'Science', 'CBSE'),
-(3, 8, 'Bright', '34, Balajinagar Society ', 'Devraj', 8469905736, 5, '2018-05-22 00:00:00', '1997-03-03', 8469905736, '', 5000, 'Social Science;Maths;Science;', 0, '2018-05-31 00:00:00', 'Science', 'CBSE'),
-(4, 9, 'BHS', '29, Ram nagar Society', 'Pujer', 8469905736, 2, '2018-05-15 00:00:00', '1996-05-08', 9825577083, '', 8000, 'Physics;Chemistry;Maths', 0, '2018-06-15 00:00:00', 'Science', 'GBSE');
+INSERT INTO `ea_student_details` (`user_id`, `standard`, `school`, `address`, `branch`, `emergency_number`, `roll_no`, `year_of_joining`, `birthdate`, `contact_no`, `refs`, `subjects_enrolled`, `year_of_leaving`, `stream`, `board`) VALUES
+(1, 8, 'Bright ', '24, Ram nagar Society', 'Devraj', 9825577083, 1, '2017', '1996-05-08', 8469905736, '', 'Maths;Science;English;', '2018', 'Science', 'CBSE'),
+(3, 8, 'Bright', '34, Balajinagar Society ', 'Devraj', 8469905736, 5, '2018', '1997-03-03', 8469905736, '', 'Social Science;Maths;Science;', '2018', 'Science', 'CBSE'),
+(4, 9, 'BHS', '29, Ram nagar Society', 'Pujer', 8469905736, 2, '2016', '1996-05-08', 9825577083, '', 'Physics;Chemistry;Maths', '2018', 'Science', 'GBSE'),
+(6, 10, 'Navrachna', '45, Shanti Park Society', '', 9998262001, 6, '2018', '1998-12-12', 9998252004, 'Via Internet', 'Maths', '2019', 'Science', 'CBSE');
 
 -- --------------------------------------------------------
 
@@ -446,7 +480,8 @@ INSERT INTO `ea_user_mapping` (`user_id`, `user_type`) VALUES
 (1, 'student'),
 (2, 'teacher'),
 (3, 'student'),
-(4, 'student');
+(4, 'student'),
+(6, 'student');
 
 --
 -- Indexes for dumped tables
@@ -539,6 +574,13 @@ ALTER TABLE `ea_attendance`
   ADD KEY `att_user` (`user_id`);
 
 --
+-- Indexes for table `ea_fees_accounts`
+--
+ALTER TABLE `ea_fees_accounts`
+  ADD PRIMARY KEY (`trans_id`),
+  ADD KEY `user_pays_fees` (`user_id`);
+
+--
 -- Indexes for table `ea_news_comments`
 --
 ALTER TABLE `ea_news_comments`
@@ -591,13 +633,13 @@ ALTER TABLE `auth_group_permissions`
 -- AUTO_INCREMENT for table `auth_permission`
 --
 ALTER TABLE `auth_permission`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `auth_user`
 --
 ALTER TABLE `auth_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `auth_user_groups`
@@ -621,13 +663,13 @@ ALTER TABLE `django_admin_log`
 -- AUTO_INCREMENT for table `django_content_type`
 --
 ALTER TABLE `django_content_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `django_migrations`
 --
 ALTER TABLE `django_migrations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `ea_attendance`
@@ -636,28 +678,34 @@ ALTER TABLE `ea_attendance`
   MODIFY `att_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
+-- AUTO_INCREMENT for table `ea_fees_accounts`
+--
+ALTER TABLE `ea_fees_accounts`
+  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `ea_news_comments`
 --
 ALTER TABLE `ea_news_comments`
-  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `ea_news_feed`
 --
 ALTER TABLE `ea_news_feed`
-  MODIFY `news_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `news_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `ea_student_details`
 --
 ALTER TABLE `ea_student_details`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `ea_teacher_details`
 --
 ALTER TABLE `ea_teacher_details`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -696,6 +744,12 @@ ALTER TABLE `auth_user_user_permissions`
 ALTER TABLE `django_admin_log`
   ADD CONSTRAINT `django_admin_log_content_type_id_c4bce8eb_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
   ADD CONSTRAINT `django_admin_log_user_id_c564eba6_fk` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`);
+
+--
+-- Constraints for table `ea_fees_accounts`
+--
+ALTER TABLE `ea_fees_accounts`
+  ADD CONSTRAINT `user_pays_fees` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `ea_news_comments`

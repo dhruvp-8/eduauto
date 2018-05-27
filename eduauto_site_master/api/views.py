@@ -84,6 +84,11 @@ class UserCreateAPIView(APIView):
 				academic_history_obj = EaAcademicHistory()
 				academic_history_obj.user_id = user_obj.id
 				academic_history_obj.save()
+
+				# Create Fees History of Student
+				fees_obj = EaFeesAccounts()
+				fees_obj.user_id = user_obj.id
+				fees_obj.save()
 			elif u_type == "teacher":
 				teacher_details_obj = EaTeacherDetails()
 				teacher_details_obj.user_id = user_obj.id
@@ -229,13 +234,63 @@ class calculateAttendanceBySpecificDate(APIView):
 		absent_days = EaAttendance.objects.filter(user_id=user_id, attend_status=0, date__range=[specific_date, next_date]).count()
 
 		return Response({'user_id': user_id, 'specific_date': specific_date, 'present_days': present_days, 'absent_days':absent_days, 'total_teaching_days': total_teaching_days}, status=HTTP_200_OK)
-"""
+
 # Add Student Details 
 class storeStudentDetails(APIView):
 	renderer_classes = (JSONRenderer, )
 
 	def post(self, request, *args, **kwargs):
-"""
+		data = request.data
+		user_id = int(data["user_id"])
+		standard = data["standard"]
+		school = data["school"]
+		address = data["address"]
+		branch = data["branch"]
+		emergency_number = data["emergency_number"]
+		year_of_joining = datetime.now().year
+		birthdate = data["birthdate"]
+		contact_no = int(data["contact_no"])
+		refs = data["refs"]
+		subjects_enrolled = data["subjects_enrolled"]
+		stream = data["stream"]
+		board = data["board"]
+		total_fees = int(data["total_fees"])
+		fees_paid = int(data["fees_paid"])
+		year_of_leaving = data["year_of_leaving"]
+
+		student_details_obj = EaStudentDetails.objects.get(user_id=user_id)
+		student_details_obj.standard = standard
+		student_details_obj.school = school
+		student_details_obj.address = address
+		student_details_obj.emergency_number = emergency_number
+		student_details_obj.year_of_joining = year_of_joining
+		student_details_obj.birthdate = birthdate
+		student_details_obj.contact_no = contact_no
+		student_details_obj.refs = refs
+		student_details_obj.subjects_enrolled = subjects_enrolled
+		student_details_obj.year_of_leaving = year_of_leaving
+		student_details_obj.stream = stream
+		student_details_obj.board = board
+		
+		if total_fees - fees_paid > 0:
+			student_details_obj.save()
+
+			fees_obj = EaFeesAccounts.objects.get(user_id=user_id)
+			fees_obj.total_fees = total_fees
+			fees_obj.fees_paid = fees_paid
+			fees_obj.paid_status = 0
+			fees_obj.save()
+		elif total_fees - fees_paid == 0:
+			student_details_obj.save()
+
+			fees_obj = EaFeesAccounts.objects.get(user_id=user_id)
+			fees_obj.total_fees = total_fees
+			fees_obj.fees_paid = fees_paid
+			fees_obj.paid_status = 1
+			fees_obj.save()
+		else:
+			return Response({'error': 'Fees Paid cannot be more than Total Fees.'}, status=HTTP_400_BAD_REQUEST)	
+		return Response({'success': 'Student created successfully', 'roll_no': student_details_obj.roll_no}, status=HTTP_200_OK)		
 
 # Get all the news present till date along with the comments
 class getNews(APIView):
