@@ -302,10 +302,21 @@ class getNews(APIView):
 			file_name = news[i]['file_name'] + '.' + news[i]['file_type']
 			news[i]['file_name'] = file_name
 			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
+			for k in range(0, len(comments)):
+				q_nuser = User.objects.get(id=comments[k]['user_id'])
+				c_name = q_nuser.first_name + ' ' + q_nuser.last_name
+				comments[k]['commented_by'] = c_name
 			news[i]['comments'] = comments
 			total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
 			news[i]['total_likes'] = total_likes
-
+			liked_obj = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).values()
+			liked_by = []
+			for j in range(0, len(liked_obj)):
+				user_id = liked_obj[j]['user_id']
+				q_user = User.objects.get(id=user_id)
+				name = q_user.first_name + ' ' + q_user.last_name
+				liked_by.append(name)
+			news[i]['liked_by'] = liked_by
 		return Response({'news': news}, status=HTTP_200_OK)
 
 # Get Only Recent/last n news posts with comments 
@@ -319,9 +330,21 @@ class getRecentNews(APIView):
 			file_name = news[i]['file_name'] + '.' + news[i]['file_type']
 			news[i]['file_name'] = file_name
 			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
+			for k in range(0, len(comments)):
+				q_nuser = User.objects.get(id=comments[k]['user_id'])
+				c_name = q_nuser.first_name + ' ' + q_nuser.last_name
+				comments[k]['commented_by'] = c_name
 			news[i]['comments'] = comments
 			total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
 			news[i]['total_likes'] = total_likes
+			liked_obj = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).values()
+			liked_by = []
+			for j in range(0, len(liked_obj)):
+				user_id = liked_obj[j]['user_id']
+				q_user = User.objects.get(id=user_id)
+				name = q_user.first_name + ' ' + q_user.last_name
+				liked_by.append(name)
+			news[i]['liked_by'] = liked_by
 
 		return Response({'news': news}, status=HTTP_200_OK)
 
@@ -346,9 +369,21 @@ class getNewsBasedonPopularity(APIView):
 				file_name = news[i]['file_name'] + '.' + news[i]['file_type']
 				news[i]['file_name'] = file_name
 				comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
+				for k in range(0, len(comments)):
+					q_nuser = User.objects.get(id=comments[k]['user_id'])
+					c_name = q_nuser.first_name + ' ' + q_nuser.last_name
+					comments[k]['commented_by'] = c_name
 				news[i]['comments'] = comments
 				total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
 				news[i]['total_likes'] = total_likes
+				liked_obj = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).values()
+				liked_by = []
+				for j in range(0, len(liked_obj)):
+					user_id = liked_obj[j]['user_id']
+					q_user = User.objects.get(id=user_id)
+					name = q_user.first_name + ' ' + q_user.last_name
+					liked_by.append(name)
+				news[i]['liked_by'] = liked_by
 			fin_news.append(news[0])	
 
 		return Response({'news': fin_news}, status=HTTP_200_OK)
@@ -365,6 +400,14 @@ class getNewsOnId(APIView):
 		tmp = news[0]
 		tmp["comments"] = comments
 		tmp["total_likes"] = total_likes
+		liked_obj = EaNewsComments.objects.filter(news_id=news_id, likes=1).values()
+		liked_by = []
+		for j in range(0, len(liked_obj)):
+			user_id = liked_obj[j]['user_id']
+			q_user = User.objects.get(id=user_id)
+			name = q_user.first_name + ' ' + q_user.last_name
+			liked_by.append(name)
+		tmp['liked_by'] = liked_by
 
 		return Response({'news': tmp}, status=HTTP_200_OK)
 
@@ -376,68 +419,73 @@ class addNewsFeed(APIView):
 		ea_news_feed_obj = EaNewsFeed()
 		data = request.data
 		user_id = data["user_id"]
-		if 'myfile' in data.keys() and 'description' in data.keys():
-			description = data["description"]
-			myfile = data["myfile"] 
-			tmp = str(myfile)
-			im = tmp.split(".")
-			if len(im) > 2:
-				return Response({'error': 'File name is should not contain more than 1 dot.'}, status=HTTP_400_BAD_REQUEST)
-			else:
-				if len(im) != 0:
-					im_name = im[0]
-					im_type = im[1]
-					dt = datetime.now()
-					ml = str(dt.microsecond)
-					f_im_name = im_name + '_' + ml
-					if im_type.lower() == 'jpg' or im_type.lower() == 'png' or im_type.lower() == 'bmp' or im_type.lower() == 'jpeg' or im_type.lower() == 'pdf' or im_type.lower() == 'txt' or im_type.lower() == 'docx' or im_type.lower() == 'xlsx':
-						ea_news_feed_obj.user_id = user_id
-						ea_news_feed_obj.description = description
-						ea_news_feed_obj.file_name = f_im_name
-						ea_news_feed_obj.file_type = im[1]
-						ea_news_feed_obj.save()
-						fin_name = f_im_name + '.' + im_type
-						fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT)
-						filename = fs.save(fin_name, myfile)
-						return Response({'success': 'News Feed created successfully.', 'news_id': ea_news_feed_obj.news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
-					else:
-						return Response({'error': 'File type must be jpg, jpeg, bmp, png, pdf, txt, docx, xlsx.'}, status=HTTP_400_BAD_REQUEST)
+		chk = int(user_id)
+		chk_obj = EaUserMapping.objects.get(user_id=user_id)
+		if(chk_obj.user_type != "student"):
+			if 'myfile' in data.keys() and 'description' in data.keys():
+				description = data["description"]
+				myfile = data["myfile"] 
+				tmp = str(myfile)
+				im = tmp.split(".")
+				if len(im) > 2:
+					return Response({'error': 'File name is should not contain more than 1 dot.'}, status=HTTP_400_BAD_REQUEST)
 				else:
-					return Response({'error': 'You cannot send myfile with empty strings if you have no content please do not include it as the key.'}, status=HTTP_400_BAD_REQUEST)
-		elif 'description' in data.keys() and not 'myfile' in data.keys():
-			description = data["description"]
-			ea_news_feed_obj.user_id = user_id
-			ea_news_feed_obj.description = description
-			ea_news_feed_obj.save()
-			return Response({'success': 'News Feed created successfully.', 'news_id': ea_news_feed_obj.news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
-		elif 'myfile' in data.keys() and not 'description' in data.keys():
-			myfile = data["myfile"] 
-			tmp = str(myfile)
-			im = tmp.split(".")
-			if len(im) > 2:
-				return Response({'error': 'File name is should not contain more than 1 dot.'}, status=HTTP_400_BAD_REQUEST)
-			else:
-				if len(im) != 0:
-					im_name = im[0]
-					im_type = im[1]
-					dt = datetime.now()
-					ml = str(dt.microsecond)
-					f_im_name = im_name + '_' + ml
-					if im_type.lower() == 'jpg' or im_type.lower() == 'png' or im_type.lower() == 'bmp' or im_type.lower() == 'jpeg' or im_type.lower() == 'pdf' or im_type.lower() == 'txt' or im_type.lower() == 'docx' or im_type.lower() == 'xlsx':
-						ea_news_feed_obj.user_id = user_id
-						ea_news_feed_obj.file_name = f_im_name
-						ea_news_feed_obj.file_type = im[1]
-						ea_news_feed_obj.save()
-						fin_name = f_im_name + '.' + im_type
-						fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT)
-						filename = fs.save(fin_name, myfile)
-						return Response({'success': 'News Feed created successfully.', 'news_id': ea_news_feed_obj.news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
+					if len(im) != 0:
+						im_name = im[0]
+						im_type = im[1]
+						dt = datetime.now()
+						ml = str(dt.microsecond)
+						f_im_name = im_name + '_' + ml
+						if im_type.lower() == 'jpg' or im_type.lower() == 'png' or im_type.lower() == 'bmp' or im_type.lower() == 'jpeg' or im_type.lower() == 'pdf' or im_type.lower() == 'txt' or im_type.lower() == 'docx' or im_type.lower() == 'xlsx':
+							ea_news_feed_obj.user_id = user_id
+							ea_news_feed_obj.description = description
+							ea_news_feed_obj.file_name = f_im_name
+							ea_news_feed_obj.file_type = im[1]
+							ea_news_feed_obj.save()
+							fin_name = f_im_name + '.' + im_type
+							fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT)
+							filename = fs.save(fin_name, myfile)
+							return Response({'success': 'News Feed created successfully.', 'news_id': ea_news_feed_obj.news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
+						else:
+							return Response({'error': 'File type must be jpg, jpeg, bmp, png, pdf, txt, docx, xlsx.'}, status=HTTP_400_BAD_REQUEST)
 					else:
-						return Response({'error': 'File type must be jpg, jpeg, bmp, png, pdf, txt, docx, xlsx.'}, status=HTTP_400_BAD_REQUEST)
+						return Response({'error': 'You cannot send myfile with empty strings if you have no content please do not include it as the key.'}, status=HTTP_400_BAD_REQUEST)
+			elif 'description' in data.keys() and not 'myfile' in data.keys():
+				description = data["description"]
+				ea_news_feed_obj.user_id = user_id
+				ea_news_feed_obj.description = description
+				ea_news_feed_obj.save()
+				return Response({'success': 'News Feed created successfully.', 'news_id': ea_news_feed_obj.news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
+			elif 'myfile' in data.keys() and not 'description' in data.keys():
+				myfile = data["myfile"] 
+				tmp = str(myfile)
+				im = tmp.split(".")
+				if len(im) > 2:
+					return Response({'error': 'File name is should not contain more than 1 dot.'}, status=HTTP_400_BAD_REQUEST)
 				else:
-					return Response({'error': 'You cannot send myfile with empty strings if you have no content please do not include it as the key.'}, status=HTTP_400_BAD_REQUEST)			 
+					if len(im) != 0:
+						im_name = im[0]
+						im_type = im[1]
+						dt = datetime.now()
+						ml = str(dt.microsecond)
+						f_im_name = im_name + '_' + ml
+						if im_type.lower() == 'jpg' or im_type.lower() == 'png' or im_type.lower() == 'bmp' or im_type.lower() == 'jpeg' or im_type.lower() == 'pdf' or im_type.lower() == 'txt' or im_type.lower() == 'docx' or im_type.lower() == 'xlsx':
+							ea_news_feed_obj.user_id = user_id
+							ea_news_feed_obj.file_name = f_im_name
+							ea_news_feed_obj.file_type = im[1]
+							ea_news_feed_obj.save()
+							fin_name = f_im_name + '.' + im_type
+							fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT)
+							filename = fs.save(fin_name, myfile)
+							return Response({'success': 'News Feed created successfully.', 'news_id': ea_news_feed_obj.news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
+						else:
+							return Response({'error': 'File type must be jpg, jpeg, bmp, png, pdf, txt, docx, xlsx.'}, status=HTTP_400_BAD_REQUEST)
+					else:
+						return Response({'error': 'You cannot send myfile with empty strings if you have no content please do not include it as the key.'}, status=HTTP_400_BAD_REQUEST)			 
+			else:
+				return Response({'error': 'Please Select Description or Image to continue'}, status=HTTP_400_BAD_REQUEST)
 		else:
-			return Response({'error': 'Please Select Description or Image to continue'}, status=HTTP_400_BAD_REQUEST)			
+			return Response({'error': 'Only a staff member or an admin or a teacher can create a post.' }, status=HTTP_400_BAD_REQUEST)			
 
 # Add Comments to the News Feed
 class addComments(APIView):
