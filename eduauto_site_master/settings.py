@@ -139,7 +139,8 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 100000000
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 # Media Storage Root
-MEDIA_STORAGE_ROOT = BASE_DIR + '/static/files/'
+MEDIA_STORAGE_ROOT_FOR_FEED = BASE_DIR + '/static/files/feed_docs/'
+MEDIA_STORAGE_ROOT_FOR_PROFILE_PIC = BASE_DIR + '/static/files/profile_pics/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/

@@ -60,6 +60,8 @@ class UserCreateAPIView(APIView):
 			email = data['email']
 			password = data['password']
 			u_type = data['u_type']
+			# Pass 0 for female and 1 for male
+			gender = int(data['gender'])
 			user_obj = User(
 				first_name = first_name,
 				last_name = last_name,
@@ -68,10 +70,17 @@ class UserCreateAPIView(APIView):
 			)
 			user_obj.set_password(password)
 			user_obj.save()
-
 			user_mapping_obj = EaUserMapping()
-			user_mapping_obj.user_id = user_obj.id
+			user_mapping_obj.user_id = user_obj.id	
 			user_mapping_obj.user_type = u_type
+			if gender == 0:
+				user_mapping_obj.gender = False
+				user_mapping_obj.profile_pic = "female"
+			else:
+				user_mapping_obj.gender = True
+				user_mapping_obj.profile_pic = "male"
+			user_mapping_obj.profile_pic_type="png"		
+
 			user_mapping_obj.save()
 
 			if u_type == "student":
@@ -110,6 +119,42 @@ class UserLoginAPIView(APIView):
 			new_data = serializer.data
 			return Response(new_data, status=HTTP_200_OK)
 		return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+# Allow user to upload his profile picture
+class UserImageUploadAPIView(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def post(self, request, *args, **kwargs):
+		data = request.data
+		user_id = int(data['user_id'])
+		myfile = data["myfile"] 
+		tmp = str(myfile)
+		im = tmp.split(".")
+		if 'myfile' in data.keys():
+			if len(im) > 2:
+				return Response({'error': 'File name is should not contain more than 1 dot.'}, status=HTTP_400_BAD_REQUEST)
+			else:
+				if len(im) != 0:
+					im_name = im[0]
+					im_type = im[1]
+					dt = datetime.now()
+					ml = str(dt.microsecond)
+					f_im_name = im_name + '_' + ml
+					if im_type.lower() == 'jpg' or im_type.lower() == 'png' or im_type.lower() == 'bmp' or im_type.lower() == 'jpeg':
+						ea_user_mapping_obj = EaUserMapping.objects.get(user_id=user_id)
+						ea_user_mapping_obj.profile_pic = f_im_name
+						ea_user_mapping_obj.profile_pic_type = im[1]
+						ea_user_mapping_obj.save()
+						fin_name = f_im_name + '.' + im_type
+						fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT_FOR_PROFILE_PIC)
+						filename = fs.save(fin_name, myfile)
+						return Response({'success': 'Profile Picture Uploaded successfully.'}, status=HTTP_200_OK)
+					else:
+						return Response({'error': 'File type must be jpg, jpeg, bmp, png.'}, status=HTTP_400_BAD_REQUEST)
+				else:
+					return Response({'error': 'Empty Image File Name.'}, status=HTTP_400_BAD_REQUEST)
+		else:
+			return Response({'error': 'Please select an image to Upload.'}, status=HTTP_400_BAD_REQUEST)
 
 # Get List of all the branches for selection
 class getBranch(APIView):
@@ -292,6 +337,14 @@ class storeStudentDetails(APIView):
 			return Response({'error': 'Fees Paid cannot be more than Total Fees.'}, status=HTTP_400_BAD_REQUEST)	
 		return Response({'success': 'Student created successfully', 'roll_no': student_details_obj.roll_no}, status=HTTP_200_OK)		
 
+# Get Image name from user_id
+def ImageGetter(user_id):
+	ea_user_mapping_obj = EaUserMapping.objects.get(user_id=user_id)
+	f_name = ea_user_mapping_obj.profile_pic
+	f_type = ea_user_mapping_obj.profile_pic_type
+	name = f_name + '.' + f_type
+	return name
+
 # Get all the news present till date along with the comments
 class getNews(APIView):
 	renderer_classes = (JSONRenderer, )
@@ -301,11 +354,13 @@ class getNews(APIView):
 		for i in range(0,len(news)):
 			file_name = news[i]['file_name'] + '.' + news[i]['file_type']
 			news[i]['file_name'] = file_name
+			news[i]['n_profile_pic'] = ImageGetter(news[i]['user_id'])
 			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
 			for k in range(0, len(comments)):
 				q_nuser = User.objects.get(id=comments[k]['user_id'])
 				c_name = q_nuser.first_name + ' ' + q_nuser.last_name
 				comments[k]['commented_by'] = c_name
+				comments[k]['c_profile_pic'] = ImageGetter(comments[k]['user_id'])
 			news[i]['comments'] = comments
 			total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
 			news[i]['total_likes'] = total_likes
@@ -329,11 +384,13 @@ class getRecentNews(APIView):
 		for i in range(0,len(news)):
 			file_name = news[i]['file_name'] + '.' + news[i]['file_type']
 			news[i]['file_name'] = file_name
+			news[i]['n_profile_pic'] = ImageGetter(news[i]['user_id'])
 			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
 			for k in range(0, len(comments)):
 				q_nuser = User.objects.get(id=comments[k]['user_id'])
 				c_name = q_nuser.first_name + ' ' + q_nuser.last_name
 				comments[k]['commented_by'] = c_name
+				comments[k]['c_profile_pic'] = ImageGetter(comments[k]['user_id'])
 			news[i]['comments'] = comments
 			total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
 			news[i]['total_likes'] = total_likes
@@ -368,11 +425,13 @@ class getNewsBasedonPopularity(APIView):
 			for i in range(0,len(news)):
 				file_name = news[i]['file_name'] + '.' + news[i]['file_type']
 				news[i]['file_name'] = file_name
+				news[i]['n_profile_pic'] = ImageGetter(news[i]['user_id'])
 				comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
 				for k in range(0, len(comments)):
 					q_nuser = User.objects.get(id=comments[k]['user_id'])
 					c_name = q_nuser.first_name + ' ' + q_nuser.last_name
 					comments[k]['commented_by'] = c_name
+					comments[k]['c_profile_pic'] = ImageGetter(comments[k]['user_id'])
 				news[i]['comments'] = comments
 				total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
 				news[i]['total_likes'] = total_likes
@@ -398,6 +457,12 @@ class getNewsOnId(APIView):
 		comments = EaNewsComments.objects.filter(news_id=news_id).exclude(description='').values()
 		total_likes = EaNewsComments.objects.filter(news_id=news_id, likes=1).count()
 		tmp = news[0]
+		tmp['n_profile_pic'] = ImageGetter(news[0]['user_id'])
+		for k in range(0, len(comments)):
+			q_nuser = User.objects.get(id=comments[k]['user_id'])
+			c_name = q_nuser.first_name + ' ' + q_nuser.last_name
+			comments[k]['commented_by'] = c_name
+			comments[k]['c_profile_pic'] = ImageGetter(comments[k]['user_id'])
 		tmp["comments"] = comments
 		tmp["total_likes"] = total_likes
 		liked_obj = EaNewsComments.objects.filter(news_id=news_id, likes=1).values()
@@ -443,7 +508,7 @@ class addNewsFeed(APIView):
 							ea_news_feed_obj.file_type = im[1]
 							ea_news_feed_obj.save()
 							fin_name = f_im_name + '.' + im_type
-							fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT)
+							fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT_FOR_FEED)
 							filename = fs.save(fin_name, myfile)
 							return Response({'success': 'News Feed created successfully.', 'news_id': ea_news_feed_obj.news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
 						else:
@@ -475,7 +540,7 @@ class addNewsFeed(APIView):
 							ea_news_feed_obj.file_type = im[1]
 							ea_news_feed_obj.save()
 							fin_name = f_im_name + '.' + im_type
-							fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT)
+							fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT_FOR_FEED)
 							filename = fs.save(fin_name, myfile)
 							return Response({'success': 'News Feed created successfully.', 'news_id': ea_news_feed_obj.news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
 						else:

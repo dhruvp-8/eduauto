@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 31, 2018 at 03:01 PM
+-- Generation Time: May 31, 2018 at 08:01 PM
 -- Server version: 10.1.29-MariaDB
 -- PHP Version: 7.1.12
 
@@ -131,11 +131,11 @@ CREATE TABLE `auth_user` (
 --
 
 INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
-(1, 'pbkdf2_sha256$100000$6eYueyDCh8yS$mtlj70TIKnAB0VZC7SAtxXPLY5FiNxuT2vSJmhhMP0c=', '2018-04-25 08:01:54.100544', 1, 'dhruv', 'Dhruv', 'Patel', 'dhruvpatel5738@gmail.com', 0, 1, '2018-04-16 09:20:13.403775'),
-(2, 'pbkdf2_sha256$100000$2EfZQTt3LfH2$ox457lAv6EHT3C9iPIQmW24xf/qtkA7EuG9yFpsmuak=', NULL, 1, 'bhaumik', 'Bhaumik', 'Ichhaporia', 'bhaumik.ichhaporia59@gmail.com', 0, 1, '2018-04-25 08:02:19.000000'),
+(1, 'pbkdf2_sha256$100000$6eYueyDCh8yS$mtlj70TIKnAB0VZC7SAtxXPLY5FiNxuT2vSJmhhMP0c=', '2018-04-25 08:01:54.100544', 1, 'dhruv', 'Dhruv', 'Patel', 'dhruvpatel5738@gmail.com', 1, 1, '2018-04-16 09:20:13.403775'),
+(2, 'pbkdf2_sha256$100000$2EfZQTt3LfH2$ox457lAv6EHT3C9iPIQmW24xf/qtkA7EuG9yFpsmuak=', NULL, 1, 'bhaumik', 'Bhaumik', 'Ichhaporia', 'bhaumik.ichhaporia59@gmail.com', 1, 1, '2018-04-25 08:02:19.000000'),
 (3, 'pbkdf2_sha256$100000$0OE7W3YnCC4w$3ogWwdhUVcocTBM4D7l2pkO1Ded2Jo5r64fwpRtos/c=', NULL, 1, 'prit123', 'Prit', 'Thakkar', 'pritthakkar@gmail.com', 0, 1, '2018-05-04 10:09:12.074985'),
 (4, 'pbkdf2_sha256$100000$yy6xIu84CdXa$/EwWng/QUkCr+eBkydg3lj/hZCdTBpvTudEU1owFJfQ=', NULL, 0, 'shail123', 'Shail', 'Shah', 'shailshah@gmail.com', 0, 1, '2018-05-04 10:09:59.379928'),
-(6, 'pbkdf2_sha256$100000$gL4aejiPEiLD$I2MMcC2670Kpo3taol98MVWOKwzOiHlP1LFqGkwcW4s=', NULL, 0, 'dxa123', 'Dxa', 'Patel', 'dxapatel0910@gmail.com', 0, 1, '2018-05-27 09:10:33.827874');
+(6, 'pbkdf2_sha256$100000$gL4aejiPEiLD$I2MMcC2670Kpo3taol98MVWOKwzOiHlP1LFqGkwcW4s=', NULL, 0, 'daxa123', 'Dxa', 'Patel', 'dxapatel0910@gmail.com', 0, 1, '2018-05-27 09:10:33.827874');
 
 -- --------------------------------------------------------
 
@@ -374,11 +374,9 @@ CREATE TABLE `ea_news_comments` (
 --
 
 INSERT INTO `ea_news_comments` (`comment_id`, `news_id`, `user_id`, `description`, `likes`, `date`) VALUES
-(1, 1, 4, 'What is the solution of Question 4?', 0, '2018-05-15 05:20:00'),
-(2, 1, 3, 'Difficult question paper.', 0, '2018-05-15 08:40:15'),
-(3, 2, 4, NULL, 1, '0000-00-00 00:00:00'),
-(4, 2, 3, NULL, 1, '2018-05-15 05:32:00'),
-(5, 2, 2, NULL, 1, '2018-05-15 05:13:00');
+(9, 15, 4, 'Are classes cancelled tomorrow?', 1, '2018-05-31 19:17:59'),
+(10, 15, 1, 'Yes, they are.', 0, '2018-05-31 19:18:20'),
+(11, 15, 3, '', 1, '2018-05-31 21:16:53');
 
 -- --------------------------------------------------------
 
@@ -400,8 +398,9 @@ CREATE TABLE `ea_news_feed` (
 --
 
 INSERT INTO `ea_news_feed` (`news_id`, `user_id`, `description`, `file_name`, `file_type`, `date`) VALUES
-(1, 1, 'Important Document regarding your fees!', 'Passport Verification (PPV)_261969', 'pdf', '2018-05-31 18:08:16'),
-(2, 2, 'Early classes at 8AM!', '6_495397', 'jpg', '2018-05-16 15:13:29');
+(15, 1, 'Important Document regarding classes', '5_502012', 'jpg', '2018-05-31 19:14:36'),
+(16, 1, 'No classes tomorrow', '', '', '2018-05-31 19:15:26'),
+(17, 1, '', '11_260626', 'jpg', '2018-05-31 19:15:40');
 
 -- --------------------------------------------------------
 
@@ -464,19 +463,22 @@ CREATE TABLE `ea_teacher_details` (
 
 CREATE TABLE `ea_user_mapping` (
   `user_id` int(11) NOT NULL,
-  `user_type` varchar(255) NOT NULL
+  `user_type` varchar(255) NOT NULL,
+  `gender` tinyint(1) NOT NULL,
+  `profile_pic` varchar(255) NOT NULL,
+  `profile_pic_type` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ea_user_mapping`
 --
 
-INSERT INTO `ea_user_mapping` (`user_id`, `user_type`) VALUES
-(1, 'student'),
-(2, 'teacher'),
-(3, 'student'),
-(4, 'student'),
-(6, 'student');
+INSERT INTO `ea_user_mapping` (`user_id`, `user_type`, `gender`, `profile_pic`, `profile_pic_type`) VALUES
+(1, 'admin', 1, 'patel_dhruv_387802', 'jpg'),
+(2, 'admin', 1, 'male', 'png'),
+(3, 'student', 1, 'male', 'png'),
+(4, 'student', 1, 'male', 'png'),
+(6, 'student', 0, 'female', 'png');
 
 --
 -- Indexes for dumped tables
@@ -634,7 +636,7 @@ ALTER TABLE `auth_permission`
 -- AUTO_INCREMENT for table `auth_user`
 --
 ALTER TABLE `auth_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `auth_user_groups`
@@ -682,13 +684,13 @@ ALTER TABLE `ea_fees_accounts`
 -- AUTO_INCREMENT for table `ea_news_comments`
 --
 ALTER TABLE `ea_news_comments`
-  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `ea_news_feed`
 --
 ALTER TABLE `ea_news_feed`
-  MODIFY `news_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `news_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `ea_student_details`

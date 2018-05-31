@@ -65,6 +65,9 @@ class EaAcademicHistory(models.Model):
 class EaUserMapping(models.Model):
 	user = models.ForeignKey(User, primary_key=True, on_delete=models.CASCADE)
 	user_type = models.CharField(max_length=255)
+	gender = models.BooleanField()
+	profile_pic = models.CharField(max_length=255)
+	profile_pic_type = models.CharField(max_length=255)
 
 	class Meta:
 		managed = False
