@@ -376,33 +376,71 @@ class addNewsFeed(APIView):
 		ea_news_feed_obj = EaNewsFeed()
 		data = request.data
 		user_id = data["user_id"]
-		description = data["description"]
-		myfile = data["myfile"] 
-		tmp = str(myfile)
-		im = tmp.split(".")
-		if len(im) > 2:
-			return Response({'error': 'File name is should not contain more than 1 dot.'}, status=HTTP_400_BAD_REQUEST)
-		else:
-			im_name = im[0]
-			im_type = im[1]
-			dt = datetime.now()
-			ml = str(dt.microsecond)
-			f_im_name = im_name + '_' + ml
-			if im_type.lower() == 'jpg' or im_type.lower() == 'png' or im_type.lower() == 'bmp' or im_type.lower() == 'jpeg' or im_type.lower() == 'pdf' or im_type.lower() == 'txt' or im_type.lower() == 'docx' or im_type.lower() == 'xlsx':
-				ks = EaNewsFeed.objects.all().last()
-				news_id = int(ks.news_id) + 1
-				ea_news_feed_obj.news_id = news_id
-				ea_news_feed_obj.user_id = user_id
-				ea_news_feed_obj.description = description
-				ea_news_feed_obj.file_name = f_im_name
-				ea_news_feed_obj.file_type = im[1]
-				ea_news_feed_obj.save()
-				fin_name = f_im_name + '.' + im_type
-				fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT)
-				filename = fs.save(fin_name, myfile)
-				return Response({'success': 'News Feed created successfully.', 'news_id': news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
+		if 'myfile' in data.keys() and 'description' in data.keys():
+			description = data["description"]
+			myfile = data["myfile"] 
+			tmp = str(myfile)
+			im = tmp.split(".")
+			if len(im) > 2:
+				return Response({'error': 'File name is should not contain more than 1 dot.'}, status=HTTP_400_BAD_REQUEST)
 			else:
-				return Response({'error': 'File type must be jpg, jpeg, bmp, png, pdf, txt, docx, xlsx.'}, status=HTTP_400_BAD_REQUEST)			
+				im_name = im[0]
+				im_type = im[1]
+				dt = datetime.now()
+				ml = str(dt.microsecond)
+				f_im_name = im_name + '_' + ml
+				if im_type.lower() == 'jpg' or im_type.lower() == 'png' or im_type.lower() == 'bmp' or im_type.lower() == 'jpeg' or im_type.lower() == 'pdf' or im_type.lower() == 'txt' or im_type.lower() == 'docx' or im_type.lower() == 'xlsx':
+					ks = EaNewsFeed.objects.all().last()
+					news_id = int(ks.news_id) + 1
+					ea_news_feed_obj.news_id = news_id
+					ea_news_feed_obj.user_id = user_id
+					ea_news_feed_obj.description = description
+					ea_news_feed_obj.file_name = f_im_name
+					ea_news_feed_obj.file_type = im[1]
+					ea_news_feed_obj.save()
+					fin_name = f_im_name + '.' + im_type
+					fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT)
+					filename = fs.save(fin_name, myfile)
+					return Response({'success': 'News Feed created successfully.', 'news_id': news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
+				else:
+					return Response({'error': 'File type must be jpg, jpeg, bmp, png, pdf, txt, docx, xlsx.'}, status=HTTP_400_BAD_REQUEST)
+		elif 'description' in data.keys() and not 'myfile' in data.keys():
+			description = data["description"]
+			ks = EaNewsFeed.objects.all().last()
+			news_id = int(ks.news_id) + 1
+			ea_news_feed_obj.news_id = news_id
+			ea_news_feed_obj.user_id = user_id
+			ea_news_feed_obj.description = description
+			ea_news_feed_obj.save()
+			return Response({'success': 'News Feed created successfully.', 'news_id': news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
+		elif 'myfile' in data.keys() and not 'description' in data.keys():
+			myfile = data["myfile"] 
+			tmp = str(myfile)
+			im = tmp.split(".")
+			if len(im) > 2:
+				return Response({'error': 'File name is should not contain more than 1 dot.'}, status=HTTP_400_BAD_REQUEST)
+			else:
+				im_name = im[0]
+				im_type = im[1]
+				dt = datetime.now()
+				ml = str(dt.microsecond)
+				f_im_name = im_name + '_' + ml
+				if im_type.lower() == 'jpg' or im_type.lower() == 'png' or im_type.lower() == 'bmp' or im_type.lower() == 'jpeg' or im_type.lower() == 'pdf' or im_type.lower() == 'txt' or im_type.lower() == 'docx' or im_type.lower() == 'xlsx':
+					ks = EaNewsFeed.objects.all().last()
+					news_id = int(ks.news_id) + 1
+					ea_news_feed_obj.news_id = news_id
+					ea_news_feed_obj.user_id = user_id
+					ea_news_feed_obj.file_name = f_im_name
+					ea_news_feed_obj.file_type = im[1]
+					ea_news_feed_obj.save()
+					fin_name = f_im_name + '.' + im_type
+					fs = FileSystemStorage(location=settings.MEDIA_STORAGE_ROOT)
+					filename = fs.save(fin_name, myfile)
+					return Response({'success': 'News Feed created successfully.', 'news_id': news_id, 'user_id': user_id, 'date': ea_news_feed_obj.date}, status=HTTP_200_OK)
+				else:
+					return Response({'error': 'File type must be jpg, jpeg, bmp, png, pdf, txt, docx, xlsx.'}, status=HTTP_400_BAD_REQUEST)	 
+		else:
+			return Response({'error': 'Please Select Description or Image to continue'}, status=HTTP_400_BAD_REQUEST)			
 
 # Add Comments to the News Feed
 class addComments(APIView):
