@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 27, 2018 at 12:30 PM
+-- Generation Time: May 31, 2018 at 03:01 PM
 -- Server version: 10.1.29-MariaDB
 -- PHP Version: 7.1.12
 
@@ -378,9 +378,7 @@ INSERT INTO `ea_news_comments` (`comment_id`, `news_id`, `user_id`, `description
 (2, 1, 3, 'Difficult question paper.', 0, '2018-05-15 08:40:15'),
 (3, 2, 4, NULL, 1, '0000-00-00 00:00:00'),
 (4, 2, 3, NULL, 1, '2018-05-15 05:32:00'),
-(5, 2, 2, NULL, 1, '2018-05-15 05:13:00'),
-(6, 3, 4, 'Thanks for this.', 0, '2018-05-16 15:37:37'),
-(7, 3, 3, '', 1, '2018-05-16 17:26:06');
+(5, 2, 2, NULL, 1, '2018-05-15 05:13:00');
 
 -- --------------------------------------------------------
 
@@ -391,7 +389,7 @@ INSERT INTO `ea_news_comments` (`comment_id`, `news_id`, `user_id`, `description
 CREATE TABLE `ea_news_feed` (
   `news_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `description` text NOT NULL,
+  `description` text,
   `file_name` varchar(255) DEFAULT NULL,
   `file_type` varchar(255) DEFAULT NULL,
   `date` datetime NOT NULL
@@ -402,11 +400,8 @@ CREATE TABLE `ea_news_feed` (
 --
 
 INSERT INTO `ea_news_feed` (`news_id`, `user_id`, `description`, `file_name`, `file_type`, `date`) VALUES
-(1, 1, 'Answer Key of the question paper!', '11_678489', 'jpg', '2018-05-16 15:06:30'),
-(2, 2, 'Early classes at 8AM!', '6_495397', 'jpg', '2018-05-16 15:13:29'),
-(3, 1, 'Important Document regarding your fees!', 'Dad_Ticket_334446', 'pdf', '2018-05-16 15:21:29'),
-(4, 1, 'Important Document regarding your fees!', 'Dad_Ticket_829555', 'pdf', '2018-05-23 17:24:44'),
-(5, 1, 'Important Document regarding your fees!', 'Dad_Ticket_178560', 'pdf', '2018-05-23 17:24:56');
+(1, 1, 'Important Document regarding your fees!', 'Passport Verification (PPV)_261969', 'pdf', '2018-05-31 18:08:16'),
+(2, 2, 'Early classes at 8AM!', '6_495397', 'jpg', '2018-05-16 15:13:29');
 
 -- --------------------------------------------------------
 
@@ -693,7 +688,7 @@ ALTER TABLE `ea_news_comments`
 -- AUTO_INCREMENT for table `ea_news_feed`
 --
 ALTER TABLE `ea_news_feed`
-  MODIFY `news_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `news_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `ea_student_details`
