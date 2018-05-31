@@ -71,7 +71,7 @@ class EaUserMapping(models.Model):
 		db_table = 'ea_user_mapping'
 
 class EaNewsFeed(models.Model):
-	news_id = models.IntegerField(primary_key=True)
+	news_id = models.AutoField(primary_key=True)
 	user = models.ForeignKey(User, primary_key=True, on_delete=models.CASCADE)
 	description = models.TextField(blank=True)
 	file_name = models.CharField(max_length=255, blank=True)
