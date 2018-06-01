@@ -359,7 +359,8 @@ class getNews(APIView):
 			for k in range(0, len(comments)):
 				q_nuser = User.objects.get(id=comments[k]['user_id'])
 				c_name = q_nuser.first_name + ' ' + q_nuser.last_name
-				comments[k]['commented_by'] = c_name
+				tp = dict({comments[k]['user_id']: c_name})
+				comments[k]['commented_by'] = tp
 				comments[k]['c_profile_pic'] = ImageGetter(comments[k]['user_id'])
 			news[i]['comments'] = comments
 			total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
@@ -370,7 +371,7 @@ class getNews(APIView):
 				user_id = liked_obj[j]['user_id']
 				q_user = User.objects.get(id=user_id)
 				name = q_user.first_name + ' ' + q_user.last_name
-				liked_by.append(name)
+				liked_by.append({user_id: name})
 			news[i]['liked_by'] = liked_by
 		return Response({'news': news}, status=HTTP_200_OK)
 
@@ -389,7 +390,8 @@ class getRecentNews(APIView):
 			for k in range(0, len(comments)):
 				q_nuser = User.objects.get(id=comments[k]['user_id'])
 				c_name = q_nuser.first_name + ' ' + q_nuser.last_name
-				comments[k]['commented_by'] = c_name
+				tp = dict({comments[k]['user_id']: c_name})
+				comments[k]['commented_by'] = tp
 				comments[k]['c_profile_pic'] = ImageGetter(comments[k]['user_id'])
 			news[i]['comments'] = comments
 			total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
@@ -400,7 +402,7 @@ class getRecentNews(APIView):
 				user_id = liked_obj[j]['user_id']
 				q_user = User.objects.get(id=user_id)
 				name = q_user.first_name + ' ' + q_user.last_name
-				liked_by.append(name)
+				liked_by.append({user_id: name})
 			news[i]['liked_by'] = liked_by
 
 		return Response({'news': news}, status=HTTP_200_OK)
@@ -430,7 +432,8 @@ class getNewsBasedonPopularity(APIView):
 				for k in range(0, len(comments)):
 					q_nuser = User.objects.get(id=comments[k]['user_id'])
 					c_name = q_nuser.first_name + ' ' + q_nuser.last_name
-					comments[k]['commented_by'] = c_name
+					tp = dict({comments[k]['user_id']: c_name})
+					comments[k]['commented_by'] = tp
 					comments[k]['c_profile_pic'] = ImageGetter(comments[k]['user_id'])
 				news[i]['comments'] = comments
 				total_likes = EaNewsComments.objects.filter(news_id=news[i]['news_id'], likes=1).count()
@@ -441,7 +444,7 @@ class getNewsBasedonPopularity(APIView):
 					user_id = liked_obj[j]['user_id']
 					q_user = User.objects.get(id=user_id)
 					name = q_user.first_name + ' ' + q_user.last_name
-					liked_by.append(name)
+					liked_by.append({user_id: name})
 				news[i]['liked_by'] = liked_by
 			fin_news.append(news[0])	
 
@@ -461,7 +464,8 @@ class getNewsOnId(APIView):
 		for k in range(0, len(comments)):
 			q_nuser = User.objects.get(id=comments[k]['user_id'])
 			c_name = q_nuser.first_name + ' ' + q_nuser.last_name
-			comments[k]['commented_by'] = c_name
+			tp = dict({comments[k]['user_id']: c_name})
+			comments[k]['commented_by'] = tp
 			comments[k]['c_profile_pic'] = ImageGetter(comments[k]['user_id'])
 		tmp["comments"] = comments
 		tmp["total_likes"] = total_likes
@@ -471,7 +475,7 @@ class getNewsOnId(APIView):
 			user_id = liked_obj[j]['user_id']
 			q_user = User.objects.get(id=user_id)
 			name = q_user.first_name + ' ' + q_user.last_name
-			liked_by.append(name)
+			liked_by.append({user_id: name})
 		tmp['liked_by'] = liked_by
 
 		return Response({'news': tmp}, status=HTTP_200_OK)
