@@ -37,9 +37,53 @@ class UserDeleteAPIView(DestroyAPIView):
 	serializer_class = UserSerializer  
   
 # Fetch all possible users
-class UserDetailAPIView(RetrieveAPIView):
-	queryset = User.objects.filter() 
-	serializer_class = UserSerializer
+class UserDetailAPIView(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def get(self, request, *args, **kwargs):
+		user_id = int(self.kwargs.get('pk'))
+		user_obj = {}
+		user = User.objects.get(id=user_id)
+		user_obj["id"] = user.id
+		user_obj["first_name"] = user.first_name
+		user_obj["last_name"] = user.last_name
+		user_obj["username"] = user.username 
+		user_obj["email"] = user.email
+		user_obj["last_login"] = user.last_login
+		user_obj["date_joined"] = user.date_joined
+		extra_user = EaUserMapping.objects.get(user_id=user_id)
+		user_obj["profile_pic"] = extra_user.profile_pic + '.' + extra_user.profile_pic_type
+		user_obj["user_type"] = extra_user.user_type
+		return Response({'user': user_obj})
+
+# Activate a User
+class ActivateUserAPIView(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def get(self, request, *args, **kwargs):
+		user_id = int(self.kwargs.get('user_id'))
+		user = User.objects.get(id=user_id)
+		if user.is_active != 1:
+			user.is_active = 1
+			user.save()
+			return Response({'success': 'User is activated.'}, status=HTTP_200_OK)
+		else:
+			return Response({'error': 'User is already activated.'}, status=HTTP_400_BAD_REQUEST)
+
+# Deactivate a User
+class DeactivateUserAPIView(APIView):
+	renderer_classes = (JSONRenderer, )
+
+	def get(self, request, *args, **kwargs):
+		user_id = int(self.kwargs.get('user_id'))
+		user = User.objects.get(id=user_id)
+		if user.is_active != 0:
+			user.is_active = 0
+			user.save()
+			return Response({'success': 'User is deactivated.'}, status=HTTP_200_OK)
+		else:
+			return Response({'error': 'User is already deactivated.'}, status=HTTP_400_BAD_REQUEST)
+
  
 # Allow to create a new user into DB
 class UserCreateAPIView(APIView):
@@ -354,6 +398,8 @@ class getNews(APIView):
 		for i in range(0,len(news)):
 			file_name = news[i]['file_name'] + '.' + news[i]['file_type']
 			news[i]['file_name'] = file_name
+			unm = User.objects.get(id=news[i]['user_id'])
+			news[i]['name'] = unm.first_name + ' ' + unm.last_name
 			news[i]['n_profile_pic'] = ImageGetter(news[i]['user_id'])
 			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
 			for k in range(0, len(comments)):
@@ -385,6 +431,8 @@ class getRecentNews(APIView):
 		for i in range(0,len(news)):
 			file_name = news[i]['file_name'] + '.' + news[i]['file_type']
 			news[i]['file_name'] = file_name
+			unm = User.objects.get(id=news[i]['user_id'])
+			news[i]['name'] = unm.first_name + ' ' + unm.last_name
 			news[i]['n_profile_pic'] = ImageGetter(news[i]['user_id'])
 			comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
 			for k in range(0, len(comments)):
@@ -427,6 +475,8 @@ class getNewsBasedonPopularity(APIView):
 			for i in range(0,len(news)):
 				file_name = news[i]['file_name'] + '.' + news[i]['file_type']
 				news[i]['file_name'] = file_name
+				unm = User.objects.get(id=news[i]['user_id'])
+				news[i]['name'] = unm.first_name + ' ' + unm.last_name
 				news[i]['n_profile_pic'] = ImageGetter(news[i]['user_id'])
 				comments = EaNewsComments.objects.filter(news_id=news[i]['news_id']).exclude(description='').values()
 				for k in range(0, len(comments)):
@@ -460,6 +510,8 @@ class getNewsOnId(APIView):
 		comments = EaNewsComments.objects.filter(news_id=news_id).exclude(description='').values()
 		total_likes = EaNewsComments.objects.filter(news_id=news_id, likes=1).count()
 		tmp = news[0]
+		unm = User.objects.get(id=news[0]['user_id'])
+		news[i]['name'] = unm.first_name + ' ' + unm.last_name
 		tmp['n_profile_pic'] = ImageGetter(news[0]['user_id'])
 		for k in range(0, len(comments)):
 			q_nuser = User.objects.get(id=comments[k]['user_id'])

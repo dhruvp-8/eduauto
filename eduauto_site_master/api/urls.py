@@ -12,6 +12,8 @@ urlpatterns = [
     url(r'^users/(?P<pk>[\w-]+)/delete/$', UserDeleteAPIView.as_view(), name='delete'),
 	url(r'^user/login/$', UserLoginAPIView.as_view(), name='login'),
 	url(r'^user/upload_image/$', UserImageUploadAPIView.as_view(), name='upload_image'),
+	url(r'^user/activate/(?P<user_id>\d+)/$', ActivateUserAPIView.as_view(), name='activate_user'),
+	url(r'^user/deactivate/(?P<user_id>\d+)/$', DeactivateUserAPIView.as_view(), name='deactivate_user'),
 
 	# Student Data
 	url(r'^branch/$', getBranch.as_view(), name='branch'),	

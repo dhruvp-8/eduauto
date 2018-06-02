@@ -71,6 +71,7 @@ class UserLoginSerializer(ModelSerializer):
 		fields = [
 			'username',
 			'password',
+			'id',
 			'token',
 		]
 		extra_kwargs = {"password":{ "write_only": True }}
@@ -95,7 +96,8 @@ class UserLoginSerializer(ModelSerializer):
 				raise ValidationError("User is not active")
 
 
-		data["token"] = unique_id			
+		data["token"] = unique_id
+		data["id"] = user_obj.id			
 
 		return data
 
